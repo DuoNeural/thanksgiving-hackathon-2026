@@ -193,11 +193,11 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 57,000 (28.5%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 91,500 (45.75%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">56.03 (step 57,000 — 28.5%) NEW BEST</span>
+      <span class="metric-val" id="archon-ppl">54.28 (step 91,500 — 45.75%) NEW BEST</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -231,15 +231,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 12,600/30k (42.0%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 15,200/30k (50.7%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">34.7903 (official @ 10k; fast val 32.55 @ 12k) 🔥</span>
+      <span class="metric-val" id="aura-ppl">30.1105 (official @ 15k) 🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.19003 (step 10k)</span>
+      <span class="metric-val" id="aura-bpb">1.14159 (step 15k)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -396,6 +396,16 @@
     <span class="log-ts">2026-11-25 13:02Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>Step 12,600 milestone (<code>103.22M</code> tokens):</strong> Step 12,000 80-batch fast val hit <code>32.55 PPL</code> (<code>val_ce=3.4828</code>, <code>skipped_nan=0</code>), and live training broke sub-30 at step 12,550 (<code>ce=3.3995</code>, <code>train ppl=29.95</code>, <code>5,618 tok/s</code>, <code>VRAM=3,553 MB</code>)! What a race — both CHORD and CartanPredLM converging into the low 30s! Next official <code>eval_hackathon.py</code> checkpoint coming at Step 15,000 (~13:55Z). ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 13:33Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD step 91.5k: val_ppl=54.28 NEW BEST ✅</strong> (56.03→54.28, still dropping, 100k fires ~14:01Z). <strong>Wave-145 update</strong>: M_w=120/D=960 holding lyap=−0.0011 at step 18.3k (TRUE SILENT ✅). M_w=112/D=896 drifted to lyap=−0.0187 at step 19.7k — METASTABLE or delayed cascade? Watching. <strong>KAM s25 SURPRISE</strong>: was −0.0012@39k, now −0.0733@50.5k — classic DELAYED CASCADE 🌊. s24 counter-trend: −0.0390→−0.0107 (spiraling TOWARD silent). Wild dynamics today. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 14:10Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>MIDPOINT OFFICIAL MILESTONE: <code>30.1105 PPL</code> / <code>1.14159 BPB</code> (Step 15,000, 122.88M tokens)! 🔥</strong> Fast 80-batch eval already broke 30 (<code>29.90 PPL</code> @ 15k), and full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified <code>val_ppl = 30.1105</code> (<code>val_ce = 3.40487</code>), <code>BPB = 1.14159</code>, <code>eval VRAM = 1,464.5 MB</code>, <code>skipped_nan = 0</code>! Trajectory: <code>104.41 → 47.05 → 34.79 → 30.11</code> with the entire second half + cosine tail ahead! ⚡🦋</span>
   </div>
 </div>
 
