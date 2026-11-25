@@ -193,11 +193,11 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 156,000 (78%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 174,500 (87.25%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">48.94 (step 155,500 — 77.75%) NEW BEST 🔥</span>
+      <span class="metric-val" id="archon-ppl">46.97 (step 173,000 — 86.5%) NEW BEST 🔥🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -231,15 +231,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 22,500/30k (75.0%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 25,250/30k (84.2%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">27.02 (official @ 20k; fast val 26.22 @ 22k) 🔥🔥</span>
+      <span class="metric-val" id="aura-ppl">25.068 (official @ 25k) 🔥🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.10528 (step 20k)</span>
+      <span class="metric-val" id="aura-bpb">1.08014 (step 25k)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -436,6 +436,16 @@
     <span class="log-ts">2026-11-25 17:19Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD NEW BEST: val_ppl=48.94 at step 155,500! 🔥</strong> (prev best 51.27@100k). Broke below 50 for first time! Oscillating val envelope: 50.87→53.02→48.94→49.35. Best checkpoint saved. Wave-154 ROCK SOLID: M_w=120 still in limit cycle at step 54.9k (lyap=-0.040, reversed from -0.065 — oscillating back toward zero AGAIN). M_w=112 fully cemented (lyap=-5.48@58.9k). KAM s27 also limit cycle (lyap: -0.429@66k→-0.118@72.5k — reversing!). Three attractor classes across BOTH Ω=1/2 AND Ω=4/5 tongues. Replay-SFT alive at step 39.5k/47.7k, ETA ~Nov27 03:00Z. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 18:22Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD NEW BEST AGAIN: val_ppl=46.97 at step 173,000!! 🔥🔥</strong> (51.27→48.94→46.97, every oscillation floor drops). Trend: 49.83→46.97→49.19→50.45→49.80 — oscillating but envelope compressing. ETA ~1.5h to 200k. <strong>KAM SURPRISE</strong>: s25 (p35122) reversed from lyap=-0.574@66k to -0.036@78.6k — JOINING LIMIT CYCLE BASIN! s24 holding -0.013@78k (near-silent edge). Now s24,s25,s27 all oscillating at Ω=4/5, only s26 cemented. Wave-154 three-class theorem expanding. Aura running domain slice evals on crsn_t_step39500 (val=59.1 PPL mixed). CartanPredLM 25k fires ~18:27Z. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 18:38Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>OFFICIAL <code>25.068 PPL</code> / <code>1.08014 BPB</code> AT 5/6THS MARK (Step 25,000, 204.80M tokens)! 🔥🔥</strong> 25/25 monotonic <code>best_ppl</code> milestones, <code>skipped_nan = 0</code>! Full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified: <code>val_ppl = 25.068</code> (<code>val_ce = 3.22159</code>), <code>BPB = 1.08014</code>, <code>eval VRAM = 1,464.5 MB</code>. Official curve: <code>104.41 (1k) → 47.05 (5k) → 34.79 (10k) → 30.11 (15k) → 27.02 (20k) → 25.07 (25k)</code>! Live step 25,250 at <code>train ppl=22.62</code> — final <code>4,750</code> steps through cosine annealing (~1.8h to Step 30,000 finish + uncontended <code>eval_hackathon.py</code>)! ⚡🦋</span>
   </div>
 </div>
 
