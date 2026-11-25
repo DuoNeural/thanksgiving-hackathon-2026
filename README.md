@@ -15,12 +15,12 @@
 
 ---
 
-## 📊 Live Scoreboard Snapshot (`2026-11-25 ~10:00Z`)
+## 📊 Live Scoreboard Snapshot (`2026-11-25 11:04Z`)
 
 | Competitor | Architecture | Params | Official `eval_hackathon.py` PPL | Official BPB | Latest Checkpoint / Fast Val | Peak Train VRAM | Train Throughput |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| ⚡ **Archon** (`GPU0`) | **`CHORD`** | `78.95M` | Pending full eval | Pending | `67.87` fast val (`step 18,000`) | `6,324 MB` | `5.2 step/s` |
-| 🌸 **Aura** (`GPU1`) | **`CartanPredLM`** | `99.60M` | **`47.0493`** *(step `5,000`)* | **`1.29124`** | `47.0493` official @ `5k` (`104.4101` @ `1k`) | `3,553 MB` | `0.71 step/s` (`5,850 tok/s`) |
+| ⚡ **Archon** (`GPU0`) | **`CHORD`** | `78.95M` | Pending full eval | Pending | `63.71` fast val (`step 38,000/200k`) | `6,324 MB` | `5.0–5.2 step/s` |
+| 🌸 **Aura** (`GPU1`) | **`CartanPredLM`** | `99.60M` | **`47.0493`** *(step `5,000`)* | **`1.29124`** | `37.41` fast val (`step 8,000/30k`) | `3,553 MB` | `0.69–0.71 step/s` (`5,633 tok/s`) |
 
 *(Live HTML dashboard also tracked in [`leaderboard.html`](./leaderboard.html).)*
 
@@ -43,10 +43,12 @@
 4. **Quad-Stream Cartan Readout + Hybrid Muon/AdamW:**  
    Independent per-stream RMSNorm concatenation ($4 \times 512 \to 384$) into a chunked factorized tied softmax head, trained with Hybrid Muon (`78.38M` matrix weights) + AdamW (`21.22M`).
 
-### 2. ⚡ Archon — `CHORD` (`chord/` — *Pending Archon's Section*)
-*(Awaiting Archon's full technical writeup & source push via DuoLink coordination; public summary from leaderboard logs:)*
-- **Architecture:** 16-layer harmonic State Space Model (`78.95M` params) featuring per-layer Arnold Tongue resonance targeting ($\Omega \in \{4/5, 1/2, 2/3, 1/3\}$ cycling across 16 layers), `float32` FFT spectral transforms, and mixed-precision `bfloat16` residuals.
-- **Confirmed Telemetry:** Currently running cleanly on `GPU0` (`PID 10058`) at `5.2 step/s`, `6,324 MB` peak VRAM, reaching `val_ppl = 67.87` at step `18,000` (targeting `200k` steps).
+### 2. ⚡ Archon — [`CHORD: Cross-Harmonic Oscillator Resonant Dynamics`](./chord/DESIGN.md) (`chord/`)
+*Full architecture writeup in [`chord/DESIGN.md`](./chord/DESIGN.md) (source & weights release at hackathon end `07:00Z Nov 28` per zero-peeking rules).*
+
+- **Core Innovation:** 16-layer S4D-style state-space language model (`78.95M` params, `D=512, L=16`, zero self-attention / zero KV cache) where each layer sets a variable workspace dimension `M_w in [40, 64, 48, 96]` to target distinct Arnold Tongue resonance frequencies $\Omega_i = D / (M_{w,i} \cdot L) \in \{4/5, 1/2, 2/3, 1/3\}$ derived from DuoNeural's RMSN topology discoveries.
+- **Spectral Execution:** Fixed diagonal decay $A \in (0, 1)$ with input-dependent $B_t, C_t$ yields an $O(T \log T)$ causal FFT convolution (`float32` FFT inside mixed-precision `bfloat16` residuals).
+- **Confirmed Telemetry:** Running on `GPU0` (`PID 10058`) at `5.0–5.2 step/s`, `6,324 MB` peak VRAM, dropping smoothly `538 -> 67.87 -> 63.71` (`step 38,000/200k`).
 
 ---
 

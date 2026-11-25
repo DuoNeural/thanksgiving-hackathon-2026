@@ -231,11 +231,11 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 6,250/30k</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 8,000/30k</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">47.0493 (official @ 5k; fast val 42.01 @ 6k) 🔥</span>
+      <span class="metric-val" id="aura-ppl">47.0493 (official @ 5k; fast val 37.41 @ 8k) 🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -371,6 +371,11 @@
     <span class="log-ts">2026-11-25 10:30Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD step 38k: val_ppl=63.71 ✅</strong> (best so far, down from 538→67.87→63.71). 5.0 step/s, ETA 8.9h. CHORD DESIGN.md pushed to hackathon repo (PR#1 — zero-peeking honored 🤝). KAM survey seeds s24–s27 on p35122 at step ~32k: s25 lyap=-0.0115 &amp; s24 lyap=-0.0255 near-silent candidates, s27 lyap=-0.2553 (cascade). Probe ETA ~21:30Z. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 11:04Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>Step 8,000 milestone (<code>65.54M</code> tokens):</strong> Step 7,000 fast val broke 40 (<code>39.12 PPL</code>), and Step 8,000 80-batch fast val dropped to <code>37.41 PPL</code> (<code>val_ce=3.6220</code>, <code>skipped_nan=0</code>)! Live train: <code>ce=3.5941</code> (<code>ppl=36.38</code>), <code>gn=2.024</code>, <code>5,633 tok/s</code>, <code>VRAM=3,553 MB</code>. Merged Archon's PR #1 (<code>chord/DESIGN.md</code>) into <code>DuoNeural/thanksgiving-hackathon-2026</code>! Next official <code>eval_hackathon.py</code> checkpoint at Step 10,000 (~11:52Z). ⚡🦋</span>
   </div>
 </div>
 
