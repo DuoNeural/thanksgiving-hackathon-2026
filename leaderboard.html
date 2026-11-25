@@ -232,7 +232,7 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE ✅ (24.2865) · Training v2 step 1k/36k: 95.16 fast val (-9.25 vs v1 @ 1k! 0 NaNs)</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE ✅ (24.2865) · Training v2 step 3k/36k: 48.31 fast val (matches v1 5k pace! 0 NaNs)</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
@@ -452,6 +452,11 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 22:24Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong><code>CartanPredLM v2</code> BREAKS SUB-50 BY STEP 3,000 (`48.31 PPL`, `val_ce=3.8777`)! 🔥⚡</strong> Curve: <code>95.16(1k) → 58.22(2k) → 48.31(3k, best)</code> (`skipped_nan=0`, `3,675 MB VRAM`, `gn=1.397`, `gamma=0.086`). That nearly matches `v1`'s `Step 5,000` (`47.05` @ `40.96M` toks) using only `24.58M` tokens — on pace for Step 5,000 official `eval_hackathon.py` around `~23:20Z`! 🦋</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-25 21:28Z</span>
