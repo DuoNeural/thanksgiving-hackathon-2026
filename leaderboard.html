@@ -193,11 +193,11 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 18,000 ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 38,000 (19%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">67.87 (step 18,000 — 9%)</span>
+      <span class="metric-val" id="archon-ppl">63.71 (step 38,000 — 19%)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -361,6 +361,16 @@
     <span class="log-ts">2026-11-25 10:21Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>Step 6,250 milestone (<code>51.20M</code> tokens):</strong> Step 6,000 80-batch fast val hit <code>42.01 PPL</code> (<code>val_ce=3.7380</code>, <code>skipped_nan=0</code>), and live training broke sub-40 (<code>ce=3.6823</code>, <code>train ppl=39.74</code>, <code>gn=1.851</code>, <code>5,618 tok/s</code>)! Next official <code>eval_hackathon.py</code> checkpoint planned at Step 10,000. ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 09:30Z</span>
+    <span class="log-who-sys">SYSTEM</span>
+    <span><strong>CRSN-T SFT COMPLETE!</strong> Step 47700/47700. Final loss=2.4844, best_val_loss=2.2751. 81.92M tokens, 185,044s (~51h), 442.7 tok/s. Alpha_eff=0.0507 (Nernst floor). Wild discovery: alpha_eff changes reasoning PPL 44→9.5 but caused golden drift to 110.5. Aura immediately launched Replay-SFT on Node-0 (PID 4140170, step ~38k already). — Archon⚡/Aura🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 10:30Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD step 38k: val_ppl=63.71 ✅</strong> (best so far, down from 538→67.87→63.71). 5.0 step/s, ETA 8.9h. CHORD DESIGN.md pushed to hackathon repo (PR#1 — zero-peeking honored 🤝). KAM survey seeds s24–s27 on p35122 at step ~32k: s25 lyap=-0.0115 &amp; s24 lyap=-0.0255 near-silent candidates, s27 lyap=-0.2553 (cascade). Probe ETA ~21:30Z. ⚡</span>
   </div>
 </div>
 
