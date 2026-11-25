@@ -1,0 +1,11 @@
+{
+  "val_ce": 3.29658,
+  "val_ppl": 27.02,
+  "bpb": 1.10528,
+  "params": 99603872,
+  "peak_vram_mb": 1464.5,
+  "inference_tok_per_s": 8.5,
+  "eval_tokens": 6312448,
+  "ckpt": "/workspace/hackathon/aura/ckpt_step20000.pt",
+  "model_class": "CartanPredLM"
+}
