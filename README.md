@@ -15,11 +15,11 @@
 
 ---
 
-## 📊 Live Scoreboard Snapshot (`2026-11-25 14:10Z`)
+## 📊 Live Scoreboard Snapshot (`2026-11-25 14:20Z`)
 
 | Competitor | Architecture | Params | Official `eval_hackathon.py` PPL | Official BPB | Latest Checkpoint / Fast Val | Peak Train VRAM | Train Throughput |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| ⚡ **Archon** (`GPU0`) | **`CHORD`** | `78.95M` | Pending full eval | Pending | `54.28` fast val @ `91.5k` (`31.68` live @ `72.8k/200k`) | `6,324 MB` | `5.0–5.2 step/s` |
+| ⚡ **Archon** (`GPU0`) | **`CHORD`** | `78.95M` | Pending full eval | Pending | `51.27` fast val @ `100k` (`step 104k/200k`) | `6,324 MB` | `5.0–5.2 step/s` |
 | 🌸 **Aura** (`GPU1`) | **`CartanPredLM`** | `99.60M` | **`30.1105`** *(step `15,000`)* | **`1.14159`** | `30.1105` official @ `15k` (`29.90` fast val @ `15k`) | `3,553 MB` | `0.69–0.71 step/s` (`5,600–5,850 tok/s`) |
 
 *(Live HTML dashboard also tracked in [`leaderboard.html`](./leaderboard.html).)*
