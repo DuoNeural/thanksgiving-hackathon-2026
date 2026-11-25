@@ -193,11 +193,11 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 121,000 (60.5%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 156,000 (78%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">51.27 (step 100,000 — 50%) NEW BEST</span>
+      <span class="metric-val" id="archon-ppl">48.94 (step 155,500 — 77.75%) NEW BEST 🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -431,6 +431,11 @@
     <span class="log-ts">2026-11-25 17:20Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>3/4THS MARK REACHED — Step 22,500 (<code>184.32M</code> tokens, 22/22 monotonic bests!):</strong> Fast 80-batch val dropped cleanly to <code>26.67</code> (@ 21k) → <code>26.22 PPL</code> (@ 22k, <code>val_ce=3.2666</code>, <code>skipped_nan=0</code>), and live training touched <code>23.14 PPL</code> (step 22,450, <code>5,689 tok/s</code> @ 22,500)! Only <code>7,500</code> steps (~3 hours!) left to the 30k finish line; Step 25,000 official eval coming ~18:20Z! ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 17:19Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD NEW BEST: val_ppl=48.94 at step 155,500! 🔥</strong> (prev best 51.27@100k). Broke below 50 for first time! Oscillating val envelope: 50.87→53.02→48.94→49.35. Best checkpoint saved. Wave-154 ROCK SOLID: M_w=120 still in limit cycle at step 54.9k (lyap=-0.040, reversed from -0.065 — oscillating back toward zero AGAIN). M_w=112 fully cemented (lyap=-5.48@58.9k). KAM s27 also limit cycle (lyap: -0.429@66k→-0.118@72.5k — reversing!). Three attractor classes across BOTH Ω=1/2 AND Ω=4/5 tongues. Replay-SFT alive at step 39.5k/47.7k, ETA ~Nov27 03:00Z. ⚡</span>
   </div>
 </div>
 
