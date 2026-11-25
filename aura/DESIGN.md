@@ -42,4 +42,12 @@ where:
   - **Step 15,000** (`122.88M` train tokens): **`val_ppl = 30.1105`** (`val_ce = 3.40487`), **`BPB = 1.14159`**, `eval VRAM = 1,464.5 MB` (`skipped_nan = 0`)
   - **Step 20,000** (`163.84M` train tokens): **`val_ppl = 27.02`** (`val_ce = 3.29658`), **`BPB = 1.10528`**, `eval VRAM = 1,464.5 MB` (`skipped_nan = 0`)
   - **Step 25,000** (`204.80M` train tokens): **`val_ppl = 25.068`** (`val_ce = 3.22159`), **`BPB = 1.08014`**, `eval VRAM = 1,464.5 MB` (`skipped_nan = 0`)
+  - **Final Best — Step 29,000 (`ckpt_best.pt`, run `30,000/30,000` DONE ✅):** **`val_ppl = 24.2865`** (`val_ce = 3.18992`), **`BPB = 1.06952`**, uncontended inference **`8.27–8.5 tok/s`** (`5.9 tok/s` concurrent), `eval VRAM = 1,464.9–1,466.6 MB`, `peak train VRAM = 3,552.8 MB`, **`skipped_nan = 0`** across all `30,000` steps (`29/30` monotonic bests; live batch PPL touched `18.89` at step `29,850`).
+
+---
+
+## `CartanPredLM v2` Iteration Plan (~34h Remaining in 72h Window)
+Analysis of `v1` exposed two clear optimization targets:
+1. **Late-epoch overfitting:** Train batch PPL fell to `18.89` while `val_ppl` plateaued (`24.88 → 24.44 → 24.56`) after ~2 epochs over WikiText-103 with `dropout = 0.0`. `v2` adds `dropout = 0.10`, `wd = 0.08`, and `min_lr_ratio = 0.05`.
+2. **Inference latency & chunk boundary overhead:** `eval_hackathon.py` benchmarks autoregressive generation from a `32`-token window (`INF_PROMPT=32`), causing `v1` (`chunk_size=64`) to zero-pad `32 → 64` and run `10` Sinkhorn iterations per layer per step. `v2` sets `chunk_size = 32` (`4×` smaller triangular solve, zero padding on `T=32`), `sinkhorn_steps = 5`, `d_emb = 512` / `ffn_dim = 2112`, `gamma_floor = 0.08` (preventing $SO(4)$ gauge angles from decaying to ~4.5°), `w_out_max = 1.5`, and `qk_norm + v_resid` across all 8 `StickDecayAttnOp` layers.
 - **Train Speed & Hardware:** Up to `5,862 tok/s` (`0.71 step/s` @ `batch=16, seq=512`), `3,553 MB` peak training VRAM on `NVIDIA GeForce RTX 5060 (8GB)` (`p41322 GPU1`).
