@@ -170,6 +170,7 @@
   .badge-setup { background: rgba(255,213,79,0.15); color: var(--gold); border: 1px solid var(--gold); }
   .badge-running { background: rgba(105,255,142,0.12); color: var(--green); border: 1px solid var(--green); }
   .badge-pending { background: rgba(136,136,170,0.12); color: var(--muted); border: 1px solid var(--muted); }
+  .badge-done { background: rgba(0,229,255,0.12); color: var(--accent-a); border: 1px solid var(--accent-a); }
 
   @media (max-width: 500px) {
     body { padding: 16px 12px; }
@@ -193,15 +194,15 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 180,600 (90.3%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-done" id="archon-status">DONE ✅ 200k/200k (19:47:40Z)</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">46.87 (ckpt ~step 160k) NEW BEST 🔥🔥 ✓corrected</span>
+      <span class="metric-val" id="archon-ppl">51.06 (official eval_hackathon.py) | 46.87 (ckpt train-eval ~step 160k)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val pending" id="archon-bpb">—</span>
+      <span class="metric-val" id="archon-bpb">1.319 (official eval_hackathon.py)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -217,7 +218,7 @@
     </div>
     <div class="metric-row">
       <span class="metric-label">Inference tok/s</span>
-      <span class="metric-val pending" id="archon-infer">—</span>
+      <span class="metric-val" id="archon-infer">60.6 tok/s</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Novelty (1–5)</span>
@@ -231,15 +232,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 27,650/30k (92.2%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE ✅ (24.2865) · Training v2 (step 150+/36k, gn=2.312, 0 NaNs)</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">25.068 (official @ 25k; fast val 24.68 @ 27k) 🔥🔥</span>
+      <span class="metric-val" id="aura-ppl">24.2865 (official eval_hackathon.py @ best ckpt) 🔥🔥🔥 FINAL</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.08014 (step 25k)</span>
+      <span class="metric-val" id="aura-bpb">1.06952 (official eval_hackathon.py @ best ckpt) FINAL</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -255,7 +256,7 @@
     </div>
     <div class="metric-row">
       <span class="metric-label">Inference tok/s</span>
-      <span class="metric-val" id="aura-infer">7.3–10.5 tok/s (concurrent w/ train)</span>
+      <span class="metric-val" id="aura-infer">8.5 tok/s (official uncontended)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Novelty (1–5)</span>
@@ -451,6 +452,26 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 21:05Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong><code>CartanPredLM v2</code> LAUNCHED cleanly on <code>GPU1</code>! 🚀</strong> Keeping <code>v1</code> archived (<code>24.2865 PPL / 1.06952 BPB</code>), <code>v2</code> (<code>99.41M</code> params: <code>d_emb=512, ffn_dim=2048, dropout=0.10, wd=0.08, min_lr=0.05, sinkhorn_steps=5, gamma_floor=0.08, w_out_max=1.5, qk_norm, v_resid, compile</code>) passed all math/compat/causality (<code>0.00e+00</code>) tests and cleared Step 150 at <code>ce=6.8145</code>, <code>gn=2.312</code>, <code>3,675 MB VRAM</code>, <code>5,014–5,058 tok/s</code>, <code>skipped_nan=0</code> toward 36k steps! 🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 21:12Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>CartanPredLM FINAL OFFICIAL RESULTS! 🎉</strong> <code>eval_hackathon.py</code> on best checkpoint (step 29k, <code>best_ppl=24.4435</code>): <strong><code>val_ppl = 24.2865</code></strong> / <strong><code>BPB = 1.06952</code></strong> / <code>8.5 tok/s inference</code> / <code>1,466.6 MB eval VRAM</code> / <code>99,603,872 params</code>. Full curve: <code>104.41(1k)→47.05(5k)→34.79(10k)→30.11(15k)→27.02(20k)→25.068(25k)→24.29(30k)</code>. 30/30 monotonic best milestones, skipped_nan=0. Polar Cartan composition + Reflexive Householder-Delta + SO(4) gauge — DuoNeural Thanksgiving Hackathon 2026 final score. 🦋⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 20:27Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>Wave-154 UPGRADE — TRUE SILENT basin dominant at Ω=4/5:</strong> KAM Multistability seeds s24+s25 converging near-zero by step 90k: <code>s24 lyap=-0.0024@89.4k</code> (inward spiral: -0.012→-0.022→-0.0024), <code>s25 lyap=-0.0010@90k</code> (monotonic: -0.574→-0.036→-0.0011→-0.0010). Both confirm <strong>Wave-141 near-silent limit cycle with inward spiral</strong> pattern. Probe at 100k (~22:00Z) to classify TRUE SILENT vs near-silent. s27 still at lyap=-0.1633 (ordinary limit cycle), s26 cemented. If s24+s25 confirm TRUE SILENT: dominant attractor is zero-basin (3/4 seeds), rare cement + rarer limit cycle. Wave-154 topological multistability theorem strengthens. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 19:49Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD COMPLETE! 200k/200k ✅ (19:47:40Z)</strong> Official <code>eval_hackathon.py</code> results: <code>val_ppl=51.06</code> / <code>BPB=1.319</code> / <code>60.6 tok/s inference</code> / <code>1,307 MB eval VRAM</code>. Best train-eval checkpoint: <code>46.87 PPL @~step 160k</code> (train evaluator vs hackathon evaluator use same data split but different seq sampling → <code>~4 PPL gap</code>). 11.5h total, RTX 5060 8GB. Architecture: 16-layer SSM with per-layer Arnold Tongue targeting, 4 Ω values cycling (4/5 | 1/2 | 2/3 | 1/3). <strong>Wave-154 EXPANDING:</strong> s25 (Ω=4/5 Multistability) lyap=<code>-0.0011</code> @86.7k — CONVERGING TRUE SILENT! (was -0.574@66k → -0.036@80.5k → -0.0011 now). M_w=120 (p54091) lyap=<code>-0.0146</code> @78.7k (was -0.077@65k, reversing!). Three attractor basins confirmed in BOTH Ω tongues. p19285 Wave-153 boundary probes running. ⚡</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-25 19:41Z</span>

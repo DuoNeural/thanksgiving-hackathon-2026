@@ -173,7 +173,14 @@ def main():
     p.add_argument("--log-every", type=int, default=50)
     p.add_argument("--adamw-lr", type=float, default=2e-4)
     p.add_argument("--muon-lr", type=float, default=8e-4)
+    p.add_argument("--min-lr-ratio", type=float, default=0.1)
     p.add_argument("--wd", type=float, default=0.05)
+    p.add_argument("--dropout", type=float, default=0.0)
+    p.add_argument("--sinkhorn-steps", type=int, default=10)
+    p.add_argument("--gamma-floor", type=float, default=0.0)
+    p.add_argument("--w-out-max", type=float, default=2.0)
+    p.add_argument("--qk-norm", action="store_true")
+    p.add_argument("--v-resid", action="store_true")
     p.add_argument("--grad-ckpt", default="all", choices=["none", "half", "2of3", "all"])
     p.add_argument("--compile", action="store_true")
     p.add_argument("--seed", type=int, default=42)
@@ -219,6 +226,12 @@ def main():
         "chunk_size": args.chunk_size,
         "max_seq_len": max(args.seq_len, 1024),
         "grad_ckpt": False,
+        "dropout": args.dropout,
+        "sinkhorn_steps": args.sinkhorn_steps,
+        "gamma_floor": args.gamma_floor,
+        "w_out_max": args.w_out_max,
+        "qk_norm": args.qk_norm,
+        "v_resid": args.v_resid,
     }
     ckpt_flag = True if args.grad_ckpt == "all" else (args.grad_ckpt if args.grad_ckpt in ("half", "2of3") else False)
     model = CartanPredLM(**{**cfg, "grad_ckpt": ckpt_flag}).to(device)
@@ -241,7 +254,7 @@ def main():
 
     model.train()
     for step in range(1, args.steps + 1):
-        scale = cosine_lr_scale(step, args.warmup, args.steps)
+        scale = cosine_lr_scale(step, args.warmup, args.steps, min_ratio=args.min_lr_ratio)
         opt.set_lr_scale(scale)
         opt.zero_grad(set_to_none=True)
 

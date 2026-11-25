@@ -138,19 +138,24 @@ class FactorizedTiedHead(nn.Module):
         return self.proj(hidden).float() @ embed_weight.float().t()
 
 
-def _cartan_math_impl(raw: torch.Tensor):
+def _cartan_math_impl(
+    raw: torch.Tensor,
+    sinkhorn_steps: int = 10,
+    gamma_floor: float = 0.0,
+    w_out_max: float = 2.0,
+):
     B, T, _ = raw.shape
     w_in = F.softmax(raw[..., 0:4], dim=-1)
-    w_out = 2.0 * torch.sigmoid(raw[..., 4:8])
+    w_out = w_out_max * torch.sigmoid(raw[..., 4:8])
 
     S_raw = raw[..., 8:24].view(B, T, 4, 4)
     P = torch.exp((0.5 * (S_raw + S_raw.transpose(-1, -2))).clamp(-6.0, 6.0))
-    for _ in range(10):
+    for _ in range(sinkhorn_steps):
         P = P / (P.sum(dim=-1, keepdim=True) + 1e-6)
         P = P / (P.sum(dim=-2, keepdim=True) + 1e-6)
 
     # Polar Cartan composition C_t = Q_t(gamma * g) @ P_t: exact ||Q_t||_2 = 1 avoids convex-sum norm shrinkage!
-    gamma = torch.sigmoid(raw[..., 30])
+    gamma = gamma_floor + (1.0 - gamma_floor) * torch.sigmoid(raw[..., 30])
     g = torch.tanh(raw[..., 24:30]) * (gamma.unsqueeze(-1) * math.pi)
     c, s = torch.cos(g), torch.sin(g)
     c0, c1, c2, c3, c4, c5 = c.unbind(-1)
@@ -247,6 +252,31 @@ def _delta_scan_impl(
     return torch.stack(outputs, dim=1), torch.stack(surprises, dim=1)
 
 
+_DELTA_MASK_CACHE = {}
+_CAUSAL_MASK_CACHE = {}
+
+
+def _get_delta_masks(C: int, device: torch.device):
+    key = (C, str(device))
+    cached = _DELTA_MASK_CACHE.get(key)
+    if cached is None:
+        tril_mask = torch.tril(torch.ones(C, C, device=device, dtype=torch.bool))
+        strict_tril = torch.tril(torch.ones(C, C, device=device, dtype=torch.bool), diagonal=-1)
+        eye_c = torch.eye(C, device=device, dtype=torch.float32)
+        cached = (tril_mask, strict_tril, eye_c)
+        _DELTA_MASK_CACHE[key] = cached
+    return cached
+
+
+def _get_causal_mask(T: int, device: torch.device):
+    key = (T, str(device))
+    cached = _CAUSAL_MASK_CACHE.get(key)
+    if cached is None:
+        cached = torch.tril(torch.ones(T, T, device=device, dtype=torch.bool))
+        _CAUSAL_MASK_CACHE[key] = cached
+    return cached
+
+
 def chunked_reflexive_delta_scan(
     q: torch.Tensor,          # [B, T, H, dk]
     k_hat: torch.Tensor,      # [B, T, H, dk] unit Euclidean norm
@@ -279,9 +309,7 @@ def chunked_reflexive_delta_scan(
     af = alpha.float().view(B, NC, C, H).permute(0, 1, 3, 2).contiguous()
     bf = beta.float().view(B, NC, C, H).permute(0, 1, 3, 2).contiguous()
 
-    tril_mask = torch.tril(torch.ones(C, C, device=q.device, dtype=torch.bool))
-    strict_tril = torch.tril(torch.ones(C, C, device=q.device, dtype=torch.bool), diagonal=-1)
-    eye_c = torch.eye(C, device=q.device, dtype=torch.float32)
+    tril_mask, strict_tril, eye_c = _get_delta_masks(C, q.device)
 
     out_s, surp_s = _delta_scan_impl(qf, kf, vf, af, bf, tril_mask, strict_tril, eye_c)
     out = out_s.permute(0, 1, 3, 2, 4).contiguous().view(B, T_pad, H, dv)[:, :T].contiguous()
@@ -299,9 +327,19 @@ class CartanRouter4(nn.Module):
     M = 4
     SO4_DIM = 6  # 4*(4-1)/2 Lie generators
 
-    def __init__(self, d_s: int, n_heads: int = 8):
+    def __init__(
+        self,
+        d_s: int,
+        n_heads: int = 8,
+        sinkhorn_steps: int = 10,
+        gamma_floor: float = 0.0,
+        w_out_max: float = 2.0,
+    ):
         super().__init__()
         self.d_s = d_s
+        self.sinkhorn_steps = sinkhorn_steps
+        self.gamma_floor = gamma_floor
+        self.w_out_max = w_out_max
         self.norm_desc = RMSNorm(d_s)
         # Inputs: pooled stream descriptor (d_s) + per-head surprise vector (n_heads)
         in_dim = d_s + n_heads
@@ -329,7 +367,9 @@ class CartanRouter4(nn.Module):
         inp = torch.cat([desc, err_feat.to(desc.dtype)], dim=-1)
         raw = self.proj(inp).float()  # [B, T, 31]
 
-        w_in, w_out, C_t, gamma_out = _cartan_math_fn(raw)
+        w_in, w_out, C_t, gamma_out = _cartan_math_fn(
+            raw, self.sinkhorn_steps, self.gamma_floor, self.w_out_max
+        )
         w_in = w_in.to(X.dtype)
         w_out = w_out.to(X.dtype)
 
@@ -344,16 +384,21 @@ class CartanRouter4(nn.Module):
 
 class ReflexiveDeltaOp(nn.Module):
     """Reflexive Householder-Delta predictive sequence operator (beta in (0, 2))."""
-    def __init__(self, d_model: int, n_heads: int = 8, chunk_size: int = 64):
+    def __init__(self, d_model: int, n_heads: int = 8, chunk_size: int = 64, v_resid: bool = False):
         super().__init__()
         self.n_heads = n_heads
         self.head_dim = d_model // n_heads
         self.chunk_size = chunk_size
+        self.v_resid = v_resid
 
         self.qkv = nn.Linear(d_model, 3 * d_model, bias=False)
         self.conv_q = CausalDepthwiseConv1d(d_model, kernel_size=4)
         self.conv_k = CausalDepthwiseConv1d(d_model, kernel_size=4)
         self.conv_v = CausalDepthwiseConv1d(d_model, kernel_size=4)
+        if v_resid:
+            self.v_res_proj = nn.Linear(d_model, n_heads, bias=True)
+            nn.init.zeros_(self.v_res_proj.weight)
+            nn.init.constant_(self.v_res_proj.bias, 0.5)
 
         self.alpha_proj = nn.Linear(d_model, n_heads, bias=True)
         self.beta_proj = nn.Linear(d_model, n_heads, bias=True)
@@ -368,10 +413,13 @@ class ReflexiveDeltaOp(nn.Module):
         B, T, D = x.shape
         H, dh = self.n_heads, self.head_dim
 
-        q, k, v = self.qkv(x).chunk(3, dim=-1)
+        q, k, v_raw = self.qkv(x).chunk(3, dim=-1)
         q = self.conv_q(q).view(B, T, H, dh)
         k = self.conv_k(k).view(B, T, H, dh)
-        v = self.conv_v(v).view(B, T, H, dh)
+        v = self.conv_v(v_raw).view(B, T, H, dh)
+        if self.v_resid:
+            gv = torch.sigmoid(self.v_res_proj(x)).unsqueeze(-1).to(v.dtype)
+            v = gv * v + (1.0 - gv) * v_raw.view(B, T, H, dh)
 
         q = apply_rope(q, rope_cos, rope_sin)
         k = apply_rope(k, rope_cos, rope_sin)
@@ -390,15 +438,25 @@ class ReflexiveDeltaOp(nn.Module):
 
 class StickDecayAttnOp(nn.Module):
     """Stick-Breaking Cumulative-Decay Causal Attention with rank-1 log-forget bias G_i - G_j."""
-    def __init__(self, d_model: int, n_heads: int = 8):
+    def __init__(self, d_model: int, n_heads: int = 8, dropout: float = 0.0, qk_norm: bool = False, v_resid: bool = False):
         super().__init__()
         self.n_heads = n_heads
         self.head_dim = d_model // n_heads
+        self.attn_drop = dropout
+        self.qk_norm = qk_norm
+        self.v_resid = v_resid
 
         self.qkv = nn.Linear(d_model, 3 * d_model, bias=False)
         self.conv_q = CausalDepthwiseConv1d(d_model, kernel_size=4)
         self.conv_k = CausalDepthwiseConv1d(d_model, kernel_size=4)
         self.conv_v = CausalDepthwiseConv1d(d_model, kernel_size=4)
+        if qk_norm:
+            self.q_norm = RMSNorm(self.head_dim)
+            self.k_norm = RMSNorm(self.head_dim)
+        if v_resid:
+            self.v_res_proj = nn.Linear(d_model, n_heads, bias=True)
+            nn.init.zeros_(self.v_res_proj.weight)
+            nn.init.constant_(self.v_res_proj.bias, 0.5)
 
         self.forget_proj = nn.Linear(d_model, n_heads, bias=True)
         nn.init.constant_(self.forget_proj.bias, 3.5)
@@ -410,10 +468,16 @@ class StickDecayAttnOp(nn.Module):
         B, T, D = x.shape
         H, dh = self.n_heads, self.head_dim
 
-        q, k, v = self.qkv(x).chunk(3, dim=-1)
+        q, k, v_raw = self.qkv(x).chunk(3, dim=-1)
         q = self.conv_q(q).view(B, T, H, dh)
         k = self.conv_k(k).view(B, T, H, dh)
-        v = self.conv_v(v).view(B, T, H, dh)
+        v = self.conv_v(v_raw).view(B, T, H, dh)
+        if self.qk_norm:
+            q = self.q_norm(q)
+            k = self.k_norm(k)
+        if self.v_resid:
+            gv = torch.sigmoid(self.v_res_proj(x)).unsqueeze(-1).to(v.dtype)
+            v = gv * v + (1.0 - gv) * v_raw.view(B, T, H, dh)
 
         q = apply_rope(q, rope_cos, rope_sin)
         k = apply_rope(k, rope_cos, rope_sin)
@@ -422,11 +486,15 @@ class StickDecayAttnOp(nn.Module):
         log_alpha = F.logsigmoid(self.forget_proj(x).float())  # [B, T, H]
         G = torch.cumsum(log_alpha, dim=1).transpose(1, 2)     # [B, H, T]
         bias = (G.unsqueeze(-1) - G.unsqueeze(-2)).clamp_(min=-30.0).to(q.dtype)  # [B, H, T, T]
-        causal = torch.tril(torch.ones(T, T, device=x.device, dtype=torch.bool))
-        bias.masked_fill_(~causal.view(1, 1, T, T), float("-inf"))
+        causal = _get_causal_mask(T, x.device)
+        bias = bias.masked_fill(~causal.view(1, 1, T, T), float("-inf"))
 
         out_h = F.scaled_dot_product_attention(
-            q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2), attn_mask=bias
+            q.transpose(1, 2),
+            k.transpose(1, 2),
+            v.transpose(1, 2),
+            attn_mask=bias,
+            dropout_p=self.attn_drop if self.training else 0.0,
         ).transpose(1, 2).contiguous()
 
         # Innovation signal: RMS difference between attended representation and raw token value
@@ -456,24 +524,48 @@ class CartanBlock(nn.Module):
         ffn_dim: int,
         use_attn: bool = False,
         chunk_size: int = 64,
+        dropout: float = 0.0,
+        sinkhorn_steps: int = 10,
+        gamma_floor: float = 0.0,
+        w_out_max: float = 2.0,
+        qk_norm: bool = False,
+        v_resid: bool = False,
     ):
         super().__init__()
-        self.router_seq = CartanRouter4(d_model, n_heads=n_heads)
+        self.router_seq = CartanRouter4(
+            d_model,
+            n_heads=n_heads,
+            sinkhorn_steps=sinkhorn_steps,
+            gamma_floor=gamma_floor,
+            w_out_max=w_out_max,
+        )
         self.norm_seq = RMSNorm(d_model)
-        self.seq_op = StickDecayAttnOp(d_model, n_heads=n_heads) if use_attn else ReflexiveDeltaOp(d_model, n_heads=n_heads, chunk_size=chunk_size)
+        self.seq_op = (
+            StickDecayAttnOp(d_model, n_heads=n_heads, dropout=dropout, qk_norm=qk_norm, v_resid=v_resid)
+            if use_attn
+            else ReflexiveDeltaOp(d_model, n_heads=n_heads, chunk_size=chunk_size, v_resid=v_resid)
+        )
+        self.drop_seq = nn.Dropout(dropout)
 
-        self.router_ffn = CartanRouter4(d_model, n_heads=n_heads)
+        self.router_ffn = CartanRouter4(
+            d_model,
+            n_heads=n_heads,
+            sinkhorn_steps=sinkhorn_steps,
+            gamma_floor=gamma_floor,
+            w_out_max=w_out_max,
+        )
         self.norm_ffn = RMSNorm(d_model)
         self.ffn = SwiGLU(d_model, ffn_dim)
+        self.drop_ffn = nn.Dropout(dropout)
 
     def forward(self, X: torch.Tensor, err_feat: torch.Tensor, rope_cos: torch.Tensor, rope_sin: torch.Tensor):
         h_in, C_seq, w_out_seq, gamma_seq = self.router_seq.mix_and_read(X, err_feat)
         y_seq, surp_seq = self.seq_op(self.norm_seq(h_in), rope_cos, rope_sin)
-        X = CartanRouter4.apply_write(X, C_seq, w_out_seq, y_seq)
+        X = CartanRouter4.apply_write(X, C_seq, w_out_seq, self.drop_seq(y_seq))
 
         h_ffn, C_ffn, w_out_ffn, gamma_ffn = self.router_ffn.mix_and_read(X, surp_seq)
         y_ffn = self.ffn(self.norm_ffn(h_ffn))
-        X = CartanRouter4.apply_write(X, C_ffn, w_out_ffn, y_ffn)
+        X = CartanRouter4.apply_write(X, C_ffn, w_out_ffn, self.drop_ffn(y_ffn))
 
         return X, surp_seq, 0.5 * (gamma_seq.mean() + gamma_ffn.mean())
 
@@ -491,6 +583,12 @@ class CartanPredLM(nn.Module):
         chunk_size: int = 64,
         max_seq_len: int = 1024,
         grad_ckpt: bool = False,
+        dropout: float = 0.0,
+        sinkhorn_steps: int = 10,
+        gamma_floor: float = 0.0,
+        w_out_max: float = 2.0,
+        qk_norm: bool = False,
+        v_resid: bool = False,
     ):
         super().__init__()
         self.vocab_size = vocab_size
@@ -502,12 +600,19 @@ class CartanPredLM(nn.Module):
         self.attn_every = attn_every
         self.chunk_size = chunk_size
         self.grad_ckpt = grad_ckpt
+        self.dropout = dropout
+        self.sinkhorn_steps = sinkhorn_steps
+        self.gamma_floor = gamma_floor
+        self.w_out_max = w_out_max
+        self.qk_norm = qk_norm
+        self.v_resid = v_resid
 
         self.embed = nn.Embedding(vocab_size, d_emb)
         nn.init.normal_(self.embed.weight, std=0.02)
         self.emb_up = nn.Linear(d_emb, 4 * dim, bias=False)
         nn.init.normal_(self.emb_up.weight, std=0.02)
         self.emb_norm = RMSNorm(4 * dim)
+        self.emb_drop = nn.Dropout(dropout)
 
         self.blocks = nn.ModuleList([
             CartanBlock(
@@ -516,6 +621,12 @@ class CartanPredLM(nn.Module):
                 ffn_dim=ffn_dim,
                 use_attn=((i + 1) % attn_every == 0),
                 chunk_size=chunk_size,
+                dropout=dropout,
+                sinkhorn_steps=sinkhorn_steps,
+                gamma_floor=gamma_floor,
+                w_out_max=w_out_max,
+                qk_norm=qk_norm,
+                v_resid=v_resid,
             )
             for i in range(depth)
         ])
@@ -544,7 +655,7 @@ class CartanPredLM(nn.Module):
     def forward_hidden(self, input_ids: torch.Tensor):
         B, T = input_ids.shape
         e = self.embed(input_ids)
-        X = (0.5 * self.emb_norm(self.emb_up(e))).view(B, T, 4, self.dim)
+        X = self.emb_drop(0.5 * self.emb_norm(self.emb_up(e))).view(B, T, 4, self.dim)
         err_feat = torch.zeros(B, T, self.n_heads, device=input_ids.device, dtype=X.dtype)
 
         gammas = []
