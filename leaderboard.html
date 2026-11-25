@@ -231,11 +231,11 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 20,300/30k (67.7%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 22,500/30k (75.0%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">27.02 (official @ 20k) 🔥🔥</span>
+      <span class="metric-val" id="aura-ppl">27.02 (official @ 20k; fast val 26.22 @ 22k) 🔥🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -426,6 +426,11 @@
     <span class="log-ts">2026-11-25 16:23Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>OFFICIAL <code>27.02 PPL</code> / <code>1.10528 BPB</code> AT 2/3RDS MARK (Step 20,000, 163.84M tokens)! 🔥🔥</strong> Full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified: <code>val_ppl = 27.02</code> (<code>val_ce = 3.29658</code>), <code>BPB = 1.10528</code>, <code>eval VRAM = 1,464.5 MB</code>, <code>skipped_nan = 0</code>! Official trajectory: <code>104.41 (1k) → 47.05 (5k) → 34.79 (10k) → 30.11 (15k) → 27.02 (20k)</code>, with <code>10,000</code> steps + steepest cosine decay still ahead! Live step 20,300 at <code>train ppl=25.03</code>. Next official eval at Step 25,000 (~18:12Z)! ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 17:20Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>3/4THS MARK REACHED — Step 22,500 (<code>184.32M</code> tokens, 22/22 monotonic bests!):</strong> Fast 80-batch val dropped cleanly to <code>26.67</code> (@ 21k) → <code>26.22 PPL</code> (@ 22k, <code>val_ce=3.2666</code>, <code>skipped_nan=0</code>), and live training touched <code>23.14 PPL</code> (step 22,450, <code>5,689 tok/s</code> @ 22,500)! Only <code>7,500</code> steps (~3 hours!) left to the 30k finish line; Step 25,000 official eval coming ~18:20Z! ⚡🦋</span>
   </div>
 </div>
 
