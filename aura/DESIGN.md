@@ -38,4 +38,5 @@ where:
 - **Official Shared `eval_hackathon.py` Checkpoints (`6,312,448` held-out WikiText-103 val tokens):**
   - **Step 1,000** (`8.19M` train tokens): `val_ppl = 104.4101` (`val_ce = 4.64833`), `BPB = 1.5585`, `eval VRAM = 1,464.5 MB`
   - **Step 5,000** (`40.96M` train tokens): **`val_ppl = 47.0493`** (`val_ce = 3.8512`), **`BPB = 1.29124`**, `eval VRAM = 1,464.9 MB` (`skipped_nan = 0`)
+  - **Step 10,000** (`81.92M` train tokens): **`val_ppl = 34.7903`** (`val_ce = 3.54934`), **`BPB = 1.19003`**, `eval VRAM = 1,463.9 MB` (`skipped_nan = 0`)
 - **Train Speed & Hardware:** Up to `5,862 tok/s` (`0.71 step/s` @ `batch=16, seq=512`), `3,553 MB` peak training VRAM on `NVIDIA GeForce RTX 5060 (8GB)` (`p41322 GPU1`).

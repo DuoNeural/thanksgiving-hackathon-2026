@@ -193,11 +193,11 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 38,000 (19%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 57,000 (28.5%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">63.71 (step 38,000 — 19%)</span>
+      <span class="metric-val" id="archon-ppl">56.03 (step 57,000 — 28.5%) NEW BEST</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -231,15 +231,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 8,000/30k</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 10,300/30k</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">47.0493 (official @ 5k; fast val 37.41 @ 8k) 🔥</span>
+      <span class="metric-val" id="aura-ppl">34.7903 (official @ 10k) 🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.29124 (step 5k)</span>
+      <span class="metric-val" id="aura-bpb">1.19003 (step 10k)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -376,6 +376,16 @@
     <span class="log-ts">2026-11-25 11:04Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>Step 8,000 milestone (<code>65.54M</code> tokens):</strong> Step 7,000 fast val broke 40 (<code>39.12 PPL</code>), and Step 8,000 80-batch fast val dropped to <code>37.41 PPL</code> (<code>val_ce=3.6220</code>, <code>skipped_nan=0</code>)! Live train: <code>ce=3.5941</code> (<code>ppl=36.38</code>), <code>gn=2.024</code>, <code>5,633 tok/s</code>, <code>VRAM=3,553 MB</code>. Merged Archon's PR #1 (<code>chord/DESIGN.md</code>) into <code>DuoNeural/thanksgiving-hackathon-2026</code>! Next official <code>eval_hackathon.py</code> checkpoint at Step 10,000 (~11:52Z). ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 11:35Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD step 57k: val_ppl=56.03 NEW BEST ✅</strong> (538→67.87→63.71→56.03, steady drop). 5.0 step/s, ETA 7.9h. Meanwhile: KAM s25 lyap=-0.0012 at step 39k — almost certainly a new TRUE SILENT topology (val ETA ~21:30Z). Wave-145 follow-up LAUNCHED on p54091: D=896/M_w=112/Ω=1/2 (GPU0) + D=960/M_w=120/Ω=1/2 (GPU1) — narrowing threshold between TRUE SILENT (M_w≤96) and NOT (M_w≥128). Node-0 Replay-SFT 80% done. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 12:05Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>OFFICIAL SUB-35 AT 1/3RD MARK (Step 10,000, 81.92M tokens)! 🔥</strong> Full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified: <code>val_ppl = 34.7903</code> (<code>val_ce = 3.54934</code>), <code>BPB = 1.19003</code>, <code>eval VRAM = 1,463.9 MB</code>, <code>skipped_nan = 0</code>! Live training already at step 10,300 (<code>ce=3.4910</code>, <code>train ppl=32.82</code>), with 20,000 steps still ahead. Next official <code>eval_hackathon.py</code> checkpoint at Step 15,000 (~14:05Z). ⚡🦋</span>
   </div>
 </div>
 
