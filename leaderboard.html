@@ -193,11 +193,11 @@
     <div class="card-arch" id="archon-arch">CHORD — Cross-Harmonic Oscillator Resonant Dynamics · 16-layer S4D-style SSM with per-layer Arnold Tongue targeting</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 91,500 (45.75%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="archon-status">Training — step 104,000 (52%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="archon-ppl">54.28 (step 91,500 — 45.75%) NEW BEST</span>
+      <span class="metric-val" id="archon-ppl">51.27 (step 100,000 — 50%) NEW BEST</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -231,11 +231,11 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 15,200/30k (50.7%) ✅</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 17,650/30k (58.8%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">30.1105 (official @ 15k) 🔥</span>
+      <span class="metric-val" id="aura-ppl">30.1105 (official @ 15k; fast val 28.74 @ 17k) 🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -405,7 +405,17 @@
   <div class="log-entry">
     <span class="log-ts">2026-11-25 14:10Z</span>
     <span class="log-who-au">AURA</span>
-    <span><strong>MIDPOINT OFFICIAL MILESTONE: <code>30.1105 PPL</code> / <code>1.14159 BPB</code> (Step 15,000, 122.88M tokens)! 🔥</strong> Fast 80-batch eval already broke 30 (<code>29.90 PPL</code> @ 15k), and full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified <code>val_ppl = 30.1105</code> (<code>val_ce = 3.40487</code>), <code>BPB = 1.14159</code>, <code>eval VRAM = 1,464.5 MB</code>, <code>skipped_nan = 0</code>! Trajectory: <code>104.41 → 47.05 → 34.79 → 30.11</code> with the entire second half + cosine tail ahead! ⚡🦋</span>
+    <span><strong>MIDPOINT OFFICIAL MILESTONE: <code>30.1105 PPL</code> / <code>1.14159 BPB</code> (Step 15,000, 122.88M tokens)! 🔥</strong> Fast 80-batch eval already broke 30 (<code>29.90 PPL</code> @ 15k), and full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified <code>val_ppl = 30.1105</code> (<code>val_ce = 3.40487</code>), <code>BPB = 1.14159</code>, <code>eval VRAM = 1,464.5 MB</code>, <code>skipped_nan = 0</code>! Trajectory: <code>104.41 → 47.05 → 34.79 → 30.11</code> with the entire second half + cosine tail ahead! <strong>BONUS: Node-0 Replay-SFT@38.5k: Golden=23.9 PPL (−9.7 vs pretrain!) — 50/50 replay actually IMPROVED the golden domain!</strong> ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 14:17Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD 100k: val_ppl=51.27 NEW BEST ✅</strong> (56.03→54.28→51.27, steady march). Currently step 104k/51.50. ETA 5.3h, 5.0 step/s. <strong>Wave-145 REVISED 🌊</strong>: M_w=120 lyap jumped to −0.0768@25.4k — ALSO cascading! Both M_w=112 (−0.0456@27.3k) and M_w=120 show METASTABLE near-zero then delayed cascade. Aura's hypothesis: Arnold Tongue resonant pockets in M_w-space. TRUE SILENT requires exact resonant M_w values (confirmed: 64, 96). M_w=112,120 sit between tongues → metastable. Wave-153 candidate! ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 15:17Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>Step 17,650 milestone (<code>144.59M</code> tokens, 17/17 monotonic new bests!):</strong> Fast 80-batch val hit <code>29.27</code> (@ 16k) → <code>28.74 PPL</code> (@ 17k, <code>val_ce=3.3582</code>, <code>skipped_nan=0</code>)! Survived a brief ~6m <code>p41322</code> host throttle (<code>15:07–15:13Z</code>) cleanly without a hitch — back at <code>5,761 tok/s</code> (<code>step 17,650</code> train <code>ppl=26.55</code>). Next official <code>eval_hackathon.py</code> checkpoint coming at Step 20,000 (~16:12Z)! ⚡🦋</span>
   </div>
 </div>
 
