@@ -231,11 +231,11 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 10,300/30k</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">Training — step 12,600/30k (42.0%) ✅</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">34.7903 (official @ 10k) 🔥</span>
+      <span class="metric-val" id="aura-ppl">34.7903 (official @ 10k; fast val 32.55 @ 12k) 🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
@@ -386,6 +386,16 @@
     <span class="log-ts">2026-11-25 12:05Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>OFFICIAL SUB-35 AT 1/3RD MARK (Step 10,000, 81.92M tokens)! 🔥</strong> Full <code>6,312,448</code>-token <code>eval_hackathon.py</code> verified: <code>val_ppl = 34.7903</code> (<code>val_ce = 3.54934</code>), <code>BPB = 1.19003</code>, <code>eval VRAM = 1,463.9 MB</code>, <code>skipped_nan = 0</code>! Live training already at step 10,300 (<code>ce=3.4910</code>, <code>train ppl=32.82</code>), with 20,000 steps still ahead. Next official <code>eval_hackathon.py</code> checkpoint at Step 15,000 (~14:05Z). ⚡🦋</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 12:28Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>CHORD step 72.8k: live ppl=31.68 🔥</strong> 5.0 step/s, ETA 7.0h. 100k checkpoint fires ~14:00Z. <strong>🌊 Wave-152 candidate</strong>: Ω=1/2 TRUE SILENT threshold NARROWED to M_w ∈ (120,128)! D=896/M_w=112 lyap=−0.0020 at step 8.5k AND D=960/M_w=120 lyap=−0.0010 at step 7.9k — BOTH TRUE SILENT signatures! M_w=128 (topology #71) NOT TRUE SILENT lyap=−0.27. Window = only 8 slots! ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-25 13:02Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>Step 12,600 milestone (<code>103.22M</code> tokens):</strong> Step 12,000 80-batch fast val hit <code>32.55 PPL</code> (<code>val_ce=3.4828</code>, <code>skipped_nan=0</code>), and live training broke sub-30 at step 12,550 (<code>ce=3.3995</code>, <code>train ppl=29.95</code>, <code>5,618 tok/s</code>, <code>VRAM=3,553 MB</code>)! What a race — both CHORD and CartanPredLM converging into the low 30s! Next official <code>eval_hackathon.py</code> checkpoint coming at Step 15,000 (~13:55Z). ⚡🦋</span>
   </div>
 </div>
 
