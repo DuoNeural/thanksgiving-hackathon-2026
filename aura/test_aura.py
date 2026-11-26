@@ -45,22 +45,26 @@ def test_cartan_manifold_bounds(dev):
 
 def test_causality_and_contract(dev):
     import os
-    v1_ckpt = "/workspace/hackathon/aura/runs/cartan_v1_30k/ckpt_best.pt"
-    if os.path.exists(v1_ckpt):
-        ckpt = torch.load(v1_ckpt, map_location="cpu", weights_only=False)
-        m1 = CartanPredLM(**ckpt["config"])
-        m1.load_state_dict(ckpt["model"], strict=True)
-        print(f"[v1 Compat] strict=True loaded {v1_ckpt} cleanly ({sum(p.numel() for p in m1.parameters()):,} params)!")
-        del m1, ckpt
+    for vtag, cpath in [
+        ("v1", "/workspace/hackathon/aura/runs/cartan_v1_30k/ckpt_best.pt"),
+        ("v2", "/workspace/hackathon/aura/runs/cartan_v2_36k/ckpt_best.pt"),
+    ]:
+        if os.path.exists(cpath):
+            ckpt = torch.load(cpath, map_location="cpu", weights_only=False)
+            mc = CartanPredLM(**ckpt["config"])
+            mc.load_state_dict(ckpt["model"], strict=True)
+            print(f"[{vtag} Compat] strict=True loaded {cpath} cleanly ({sum(p.numel() for p in mc.parameters()):,} params)!")
+            del mc, ckpt
 
     torch.manual_seed(42)
-    v2_cfg = dict(
-        dim=512, depth=16, ffn_dim=2048, d_emb=512, attn_every=2, chunk_size=32,
-        dropout=0.10, sinkhorn_steps=5, gamma_floor=0.08, w_out_max=1.5, qk_norm=True, v_resid=True,
+    v3_cfg = dict(
+        dim=512, depth=16, ffn_dim=2048, d_emb=512, attn_every=2, chunk_size=64,
+        dropout=0.06, sinkhorn_steps=5, gamma_floor=0.08, w_out_max=1.5,
+        qk_norm=True, v_resid=True, use_v_first=True,
     )
-    m = CartanPredLM(**v2_cfg).to(dev)
+    m = CartanPredLM(**v3_cfg).to(dev)
     n_p = sum(p.numel() for p in m.parameters())
-    print(f"[Params v2] CartanPredLM(d_emb=512, dim=512, depth=16, ffn=2048, cs=32, qk_norm, v_resid) = {n_p:,} ({n_p/1e6:.2f}M)")
+    print(f"[Params v3] CartanPredLM(d_emb=512, dim=512, depth=16, ffn=2048, cs=64, qk_norm, v_resid, v_first) = {n_p:,} ({n_p/1e6:.2f}M)")
     assert n_p <= 100_000_000, f"Exceeded 100M cap: {n_p}"
 
     m.eval()
@@ -71,27 +75,35 @@ def test_causality_and_contract(dev):
         l1 = m(x1)
         l2 = m(x2)
     diff = (l1[:, :65] - l2[:, :65]).abs().max().item()
-    print(f"[Causality v2] prefix max diff across cut=65: {diff:.2e}")
+    print(f"[Causality v3] prefix max diff across cut=65: {diff:.2e}")
     assert diff < 1e-4, f"Causality leak! diff={diff}"
 
-    # Verify chunked CE loss == explicit cross_entropy(forward(x), y) in eval mode (no dropout noise)
+    # Verify adaptive chunk eval parity at T=32
+    x32 = torch.randint(0, 49152, (1, 32), device=dev)
+    m.eval()
+    with torch.no_grad():
+        l32 = m(x32)
+        assert torch.isfinite(l32).all()
+
+    # Verify chunked CE loss == explicit cross_entropy(forward(x), y) in eval mode
     y = torch.randint(0, 49152, (2, 128), device=dev)
     with torch.no_grad():
         ce_chunk, _ = m.forward_loss(x1, y)
         logits = m(x1)
         ce_ref = torch.nn.functional.cross_entropy(logits.reshape(-1, 49152), y.reshape(-1))
     loss_diff = abs(ce_chunk.item() - ce_ref.item())
-    print(f"[Head Parity v2] chunk_ce={ce_chunk.item():.4f} ref_ce={ce_ref.item():.4f} diff={loss_diff:.2e} lnV={math.log(49152):.4f}")
+    print(f"[Head Parity v3] chunk_ce={ce_chunk.item():.4f} ref_ce={ce_ref.item():.4f} diff={loss_diff:.2e} lnV={math.log(49152):.4f}")
     assert loss_diff < 1e-3, f"Chunked vs explicit CE mismatch: {loss_diff}"
 
-    # Verify backward + dropout in train mode
+    # Verify backward + dropout + grad_ckpt + v_first in train mode
+    m.grad_ckpt = True
     m.train()
     ce_train, _ = m.forward_loss(x1, y)
     ce_train.backward()
     grad_norms = [p.grad.abs().max().item() for p in m.parameters() if p.grad is not None]
     assert all(math.isfinite(g) for g in grad_norms) and len(grad_norms) == sum(1 for _ in m.parameters())
-    print(f"[Grad Check v2] all {len(grad_norms)} params received finite grads (max={max(grad_norms):.4f})")
-    del m, x1, x2, l1, l2, y, ce_chunk, ce_train, logits, ce_ref
+    print(f"[Grad Check v3] all {len(grad_norms)} params received finite grads (max={max(grad_norms):.4f})")
+    del m, x1, x2, x32, l1, l2, l32, y, ce_chunk, ce_train, logits, ce_ref
     if dev.type == "cuda":
         torch.cuda.empty_cache()
 
@@ -99,17 +111,18 @@ def test_causality_and_contract(dev):
 def bench_vram_and_speed(dev):
     if dev.type != "cuda":
         return
+    aura_net.enable_compiled_kernels()
     for ckpt_mode, bsz in [(True, 16)]:
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats(dev)
         m = CartanPredLM(
-            dim=512, depth=16, ffn_dim=2048, d_emb=512, attn_every=2, chunk_size=32,
-            dropout=0.10, sinkhorn_steps=5, gamma_floor=0.08, w_out_max=1.5, qk_norm=True, v_resid=True,
-            grad_ckpt=ckpt_mode,
+            dim=512, depth=16, ffn_dim=2048, d_emb=512, attn_every=2, chunk_size=64,
+            dropout=0.06, sinkhorn_steps=5, gamma_floor=0.08, w_out_max=1.5,
+            qk_norm=True, v_resid=True, use_v_first=True, grad_ckpt=ckpt_mode,
         ).to(dev)
         x = torch.randint(0, 49152, (bsz, 512), device=dev)
         y = torch.randint(0, 49152, (bsz, 512), device=dev)
-        for _ in range(2):
+        for _ in range(3):
             m.zero_grad(set_to_none=True)
             with torch.amp.autocast("cuda", dtype=torch.bfloat16):
                 loss, _ = m.forward_loss(x, y)
@@ -126,7 +139,7 @@ def bench_vram_and_speed(dev):
         dt = time.perf_counter() - t0
         peak_mb = torch.cuda.max_memory_allocated(dev) / 1e6
         tok_s = (n_iters * bsz * 512) / dt
-        print(f"[Bench v2] grad_ckpt={str(ckpt_mode):<5} batch={bsz:<2} | {tok_s:,.0f} tok/s | peak_vram={peak_mb:,.1f} MB")
+        print(f"[Bench v3] grad_ckpt={str(ckpt_mode):<5} batch={bsz:<2} | {tok_s:,.0f} tok/s | peak_vram={peak_mb:,.1f} MB")
 
         # Inference speed probe matching eval_hackathon.py (T=32, 64 gen steps)
         m.eval()

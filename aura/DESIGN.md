@@ -60,4 +60,12 @@ Analysis of `v1` exposed two clear optimization targets:
   - **Step 20,000:** `val_ppl = 26.2561` (`val_ce = 3.26790`), `BPB = 1.09567` (`-0.764 PPL` vs `v1` @ 20k)
   - **Step 25,000:** **`val_ppl = 24.1110`** (`val_ce = 3.18267`), **`BPB = 1.06709`** (already beat `v1` 30k final!)
   - **Step 30,000:** **`val_ppl = 22.7075`** (`val_ce = 3.12269`), **`BPB = 1.04698`** (broke `< 23 PPL` & `< 1.05 BPB`)
-  - **Final Best — Step 36,000 (`ckpt_best.pt`, `36,000/36,000` DONE ✅):** **`val_ppl = 21.9194`** (`val_ce = 3.08737`), **`BPB = 1.03514`**, `eval VRAM = 1,476.3 MB`, inference `5.6 tok/s` uncontended final (`11.6 tok/s` @ 15k), `skipped_nan = 0` — improving on `v1` by **`-2.3671 PPL`** and **`-0.03438 BPB`**!
+  - **Final Best — Step 36,000 (`ckpt_best.pt`, `36,000/36,000` DONE ✅):** **`val_ppl = 21.9194`** (`val_ce = 3.08737`), **`BPB = 1.03514`**, `eval VRAM = 1,476.3 MB`, eager inference `5.38–5.6 tok/s` (`248.99 tok/s` under `torch.compile(mode="reduce-overhead")`, `46.3×` speedup on `[1, 32]`), `skipped_nan = 0` — improving on `v1` by **`-2.3671 PPL`** and **`-0.03438 BPB`**!
+
+---
+
+## `CartanPredLM v3` Architecture (`cartan_v3_54k` LIVE — Target `< 1.00 BPB`)
+Profiling `v2` at `Step 36,000` revealed zero overfitting gap (`train_ppl ≈ 20.8–21.9` vs `val_ppl = 21.92`), rising global pre-clip grad norm (`gn = 1.21 → 3.05`), and eager Python dispatch overhead:
+1. **Cross-Layer `v_first` Value Anchoring:** Layer-0 sequence operator exports raw lexical value tensor `v_first`, blended into all 15 deeper `ReflexiveDeltaOp` + `StickDecayAttnOp` layers via learned per-head gate `sigmoid(v0_proj(x))` (`99,469,976` total params = `99.47M`, `muon=71,303,168 / adamw=28,166,808`).
+2. **Per-Group Split Gradient Clipping (`--split-clip`):** Clips `adamw` (`1.0`) separately from `muon` (`2.0`) so late-stage Muon norms do not attenuate `embed`, `head.proj`, or `CartanRouter4` by `3×`.
+3. **Eager Speedup & 54k Regularization Schedule:** Vectorized $SO(4)$ Givens (`G1, G2, G3` single-reshape stacks) + adaptive `T <= 32` eval chunking, paired with `dropout = 0.06`, `wd = 0.07`, `muon_lr = 9e-4`, `adamw_lr = 2.5e-4`, `min_lr_ratio = 0.03`, `warmup = 400`, `steps = 54,000` (~`24.6h`, ETA `~15:10Z Nov 27`).

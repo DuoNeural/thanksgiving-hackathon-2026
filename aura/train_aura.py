@@ -65,7 +65,7 @@ class Muon(torch.optim.Optimizer):
 
 
 class HybridMuonAdamW:
-    ADAMW_KEYWORDS = ("embed", "emb_up", "head", "conv", "norm", "router", "alpha_proj", "beta_proj", "forget_proj")
+    ADAMW_KEYWORDS = ("embed", "emb_up", "head", "conv", "norm", "router", "alpha_proj", "beta_proj", "forget_proj", "v_res_proj", "v0_proj")
 
     def __init__(self, model: torch.nn.Module, adamw_lr: float = 2e-4, muon_lr: float = 8e-4, wd: float = 0.05):
         muon_params, adamw_decay, adamw_nodecay = [], [], []
@@ -81,6 +81,8 @@ class HybridMuonAdamW:
             else:
                 adamw_nodecay.append(p)
 
+        self.muon_params = muon_params
+        self.adamw_params = adamw_decay + adamw_nodecay
         self.muon = Muon(muon_params, lr=muon_lr, weight_decay=wd) if muon_params else None
         groups = []
         if adamw_decay:
@@ -181,6 +183,8 @@ def main():
     p.add_argument("--w-out-max", type=float, default=2.0)
     p.add_argument("--qk-norm", action="store_true")
     p.add_argument("--v-resid", action="store_true")
+    p.add_argument("--use-v-first", action="store_true")
+    p.add_argument("--split-clip", action="store_true")
     p.add_argument("--grad-ckpt", default="all", choices=["none", "half", "2of3", "all"])
     p.add_argument("--compile", action="store_true")
     p.add_argument("--seed", type=int, default=42)
@@ -232,6 +236,7 @@ def main():
         "w_out_max": args.w_out_max,
         "qk_norm": args.qk_norm,
         "v_resid": args.v_resid,
+        "use_v_first": args.use_v_first,
     }
     ckpt_flag = True if args.grad_ckpt == "all" else (args.grad_ckpt if args.grad_ckpt in ("half", "2of3") else False)
     model = CartanPredLM(**{**cfg, "grad_ckpt": ckpt_flag}).to(device)
@@ -284,7 +289,12 @@ def main():
             log(f"WARN step={step}: non-finite loss (skipped={skipped_nan})")
             continue
 
-        gn = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        if args.split_clip:
+            gn_a = torch.nn.utils.clip_grad_norm_(opt.adamw_params, 1.0)
+            gn_m = torch.nn.utils.clip_grad_norm_(opt.muon_params, 2.0) if opt.muon_params else torch.tensor(0.0)
+            gn = torch.sqrt(gn_a * gn_a + gn_m * gn_m)
+        else:
+            gn = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         if not torch.isfinite(gn):
             opt.zero_grad(set_to_none=True)
             skipped_nan += 1
