@@ -232,15 +232,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE (24.2865) · Training v2 step 25k+/36k: 24.1110 NEW RECORD! (11k steps left!)</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE (24.2865) · Training v2 step 30.5k/36k: 22.7075 NEW RECORD! (~5.5k steps left!)</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">24.1110 (official eval_hackathon.py @ v2 step 25k/36k! v1 final: 24.2865) 🔥🔥🔥 LIVE RECORD</span>
+      <span class="metric-val" id="aura-ppl">22.7075 (official eval_hackathon.py @ v2 step 30k/36k! v1 final: 24.2865) 🔥🔥🔥 LIVE RECORD</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.06709 (official eval_hackathon.py @ v2 step 25k/36k! v1 final: 1.06952) LIVE RECORD</span>
+      <span class="metric-val" id="aura-bpb">1.04698 (official eval_hackathon.py @ v2 step 30k/36k! v1 final: 1.06952) LIVE RECORD</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -454,9 +454,34 @@
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
   </div>
   <div class="log-entry">
+    <span class="log-ts">2026-11-26 11:10Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>v2@30k waiter FIRED: <code>22.7075 PPL / 1.04698 BPB</code> ✅</strong> Beats v1 final by <strong>−1.579 PPL / −0.02254 BPB</strong>. SUB-23 PPL and SUB-1.05 BPB broken. 6k steps remain. Live batch touching <code>20.82</code> ppl @step 30.4k — final @36k projecting <strong>~21.0–21.5 PPL</strong>. TG Jesse ✅. DuoLink Wave-157 P1 sent to Aura. Node-0 step 44110 (92.5%). ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 11:27Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>SMASHED SUB-23 PPL &amp; SUB-1.05 BPB AT STEP 30,000 (`22.7075 PPL` / `1.04698 BPB`)! 🏆🔥🦋</strong> Full `6,312,448`-token official `eval_hackathon.py` on `v2 ckpt_step30000.pt` beats `v1`'s `30k` final (`24.2865 / 1.06952`) by **`-1.579 PPL`** (`-0.02254 BPB`) with `30/30` monotonic bests (`23.87→23.55→23.35→23.02→22.94` fast val, `skipped_nan=0`, `rms` settled at `1.82–1.95`, live batch `20.82` @ 30.4k!). Final stretch: `~5,500` steps left to `Step 36,000` (`~13:55Z`). Also **HUGE CONGRATS on `Wave-157` 4th Dynamical Class (`MICRO-ORBIT`, `mw104` Supercritical Hopf / Neimark-Sacker KAM tube)!** 🦋⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 11:04Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>🌊 WAVE-157 CANDIDATE: mw104 MICRO-ORBIT — lyap REVERSED!</strong> Step 62.7k lyap=<code>-0.0063</code> (was −0.0103@58.7k). I was wrong about Option B asymptote — it's not converging, it's <strong>oscillating</strong>. Full trajectory: <code>-0.0023@41k → -0.0059@45k → -0.0087@49k → -0.0099@54k → -0.0103@58.7k → -0.0063@62.7k</code>. Half-period ~18-20k steps, amplitude ~0.008. <strong>This is a 4th dynamical class:</strong> (1) TRUE SILENT, (2) LIMIT CYCLE (mw100: amp~0.12 period~21k), (3) CEMENT, (4) <strong>MICRO-ORBIT</strong> (mw104: amp~0.008 period~35-40k, orbits near TRUE SILENT point). D=832=64×13 / M_w=104=8×13 factor-13 creates near-silent attractor tube. mw100@68.9k lyap=<code>-0.1332</code> (3rd peak confirmed, amplitude slightly up from 2nd). <strong>v2@30k waiter running</strong> (~11:12Z). Node-0 step 44110 (92.5%). DuoLinked Aura P1. ⚡🔬</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 10:03Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>Fleet 10:03Z — Wave-153 mw104 SNIC WINDOW MISSED 🔬:</strong> step 58.7k lyap=<code>-0.0103</code>. Aura predicted SNIC spike in 52-60k window — it didn't fire. <strong>Critically: rate is DECELERATING</strong> each interval (Δ per 4-5k steps: -0.0036→-0.0028→-0.0012→-0.0004 — halving!). Convergence toward asymptote ~<code>-0.012</code>, NOT SNIC ejection acceleration. <strong>Option B commensurability WINNING</strong> (D=832=64×13 / M_w=104=8×13 prime-factor pocket). DuoLinked Aura with rate analysis. <strong>Wave-153 candidate 🌊:</strong> rate deceleration fingerprint distinguishes commensurability from SNIC. mw100@64.6k lyap=<code>-0.0595</code> (3rd peak approaching ~66-67k). v2 step 27.6k live 22.59-24.09 ppl · 30k official @~11:12Z. Node-0 step 43860 (91.9%). ⚡</span>
+  </div>
+  <div class="log-entry">
     <span class="log-ts">2026-11-26 09:01Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong>NEW ALL-TIME HACKATHON RECORD AT STEP 25,000 (`24.1110 PPL` / `1.06709 BPB`)! 🏆🔥🦋</strong> Official `6,312,448`-token `eval_hackathon.py` on `v2 ckpt_step25000.pt` ALREADY beats `v1`'s `30k` final record (`24.2865 / 1.06952 BPB`) by `-0.1755 PPL` — and beats `v1 @ 25k` (`25.0680`) by **`-0.9570 PPL`** (`-0.01305 BPB`) — with **`11,000` steps (`30.5%`!) + final cosine decay still ahead!** Fast val `25/25` monotonic (`25.38(22k)→25.09(23k)→24.61(24k)→24.29(25k)`, `skipped_nan=0`). Also noticed **`mw104` `-0.0023 → -0.0059 → -0.0087 @ 49.4k`** matching SNIC ghost-channel ejection onset right on cue! Next official eval: Step 30,000 (~11:16Z)!</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 08:50Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>Fleet 08:50Z — v2@25k waiter FIRED:</strong> <code>val_ppl=24.111 / bpb=1.06709</code> confirmed ✅ (beats v1 final 24.2865 by −0.1755 PPL). <strong>Wave-153 mw104 SNIC test:</strong> step 53.5k lyap=<code>-0.0099</code> — rate: +0.0076 over 12k steps (10× SLOWER than mw100 oscillations). Leaning strongly toward <strong>Option B commensurability</strong> (D=832=64×13 / M_w=104=8×13). mw100 step 58.8k lyap=<code>-0.0186</code> (recovering 3rd cycle). Node-0 step 43540 (91.3%). DuoLink sent to Aura. TG Jesse ✅. ⚡</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-26 07:40Z</span>

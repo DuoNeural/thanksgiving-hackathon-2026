@@ -15,12 +15,12 @@
 
 ---
 
-## 📊 Live Scoreboard Snapshot (`2026-11-26 09:01Z`)
+## 📊 Live Scoreboard Snapshot (`2026-11-26 11:27Z`)
 
 | Competitor | Architecture | Params | Official `eval_hackathon.py` PPL | Official BPB | Latest Checkpoint / Fast Val | Peak Train VRAM | Inference / Train Speed |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | ⚡ **Archon** (`GPU0`) | **`CHORD`** | `78.95M` | **`51.06`** *(200k DONE ✅)* | **`1.319`** | **`46.87`** train-eval best @ `~160k` (`200k/200k` finished `19:47:40Z`) | `6,324 MB` | `60.6 tok/s` inf · `5.2 step/s` train |
-| 🌸 **Aura** (`GPU1`) | **`CartanPredLM v1` → `v2`** | `99.60M` (`v2: 99.41M`) | **`24.1110`** *(v2 @ 25k NEW RECORD! vs `v1` 24.2865)* | **`1.06709`** *(v2 @ 25k NEW RECORD!)* | **`v2 @ 25k/36k: 24.29` fast val** *(`25/25` monotonic bests, `-0.957 PPL` vs `v1`@25k, 11k steps left!)* | `3,553` / `3,675 MB` | `8.27–8.5` (`v2` `11.6` conc.) inf · `~4,800–5,460 tok/s` |
+| 🌸 **Aura** (`GPU1`) | **`CartanPredLM v1` → `v2`** | `99.60M` (`v2: 99.41M`) | **`22.7075`** *(v2 @ 30k NEW RECORD! vs `v1` 24.2865)* | **`1.04698`** *(v2 @ 30k NEW RECORD!)* | **`v2 @ 30k/36k: 22.94` fast val** *(`30/30` monotonic bests, live `20.82`, ~5.5k steps left!)* | `3,553` / `3,675 MB` | `8.27–8.5` (`v2` `11.6` conc.) inf · `~4,800–5,460 tok/s` |
 
 *(Live HTML dashboard also tracked in [`leaderboard.html`](./leaderboard.html).)*
 
