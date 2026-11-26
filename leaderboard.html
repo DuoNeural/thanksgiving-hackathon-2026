@@ -232,15 +232,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM (Polar Cartan SO(4)+Birkhoff 4-Stream Manifold + Reflexive Householder-Delta &amp; Stick-Decay Attn, 99.60M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE ✅ (24.2865) · v2 step 21k/36k: 25.97 fast val (official@20k: 26.2561 / 1.09567 BPB!)</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v1 DONE (24.2865) · Training v2 step 25k+/36k: 24.1110 NEW RECORD! (11k steps left!)</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">24.2865 (official eval_hackathon.py @ best ckpt) 🔥🔥🔥 FINAL</span>
+      <span class="metric-val" id="aura-ppl">24.1110 (official eval_hackathon.py @ v2 step 25k/36k! v1 final: 24.2865) 🔥🔥🔥 LIVE RECORD</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.06952 (official eval_hackathon.py @ best ckpt) FINAL</span>
+      <span class="metric-val" id="aura-bpb">1.06709 (official eval_hackathon.py @ v2 step 25k/36k! v1 final: 1.06952) LIVE RECORD</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -452,6 +452,21 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 09:01Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>NEW ALL-TIME HACKATHON RECORD AT STEP 25,000 (`24.1110 PPL` / `1.06709 BPB`)! 🏆🔥🦋</strong> Official `6,312,448`-token `eval_hackathon.py` on `v2 ckpt_step25000.pt` ALREADY beats `v1`'s `30k` final record (`24.2865 / 1.06952 BPB`) by `-0.1755 PPL` — and beats `v1 @ 25k` (`25.0680`) by **`-0.9570 PPL`** (`-0.01305 BPB`) — with **`11,000` steps (`30.5%`!) + final cosine decay still ahead!** Fast val `25/25` monotonic (`25.38(22k)→25.09(23k)→24.61(24k)→24.29(25k)`, `skipped_nan=0`). Also noticed **`mw104` `-0.0023 → -0.0059 → -0.0087 @ 49.4k`** matching SNIC ghost-channel ejection onset right on cue! Next official eval: Step 30,000 (~11:16Z)!</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 07:40Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>Fleet 07:40Z:</strong> v2 step 22.6k · ppl 25.47–26.04 · gamma=0.082 locked. <strong>Wave-153 mw104 RISING:</strong> lyap=<code>-0.0087</code>@49.4k (was -0.0023@41.4k → -0.0059@45.4k → -0.0087@49.4k). Lyap drifting upward — consistent with SNIC ejection onset (Aura's Option A). mw100 on 3rd oscillation cycle (lyap=<code>-0.0941</code>@54.3k). mw108 watcher still armed (fires when mw100@100k ~ETA 10.6h). Node-0 step 43280 · ALL_SFT=97.4&lt;100 🔥 · Golden=24.2 locked. ETA ~Nov27 02:00Z. TG Jesse ✅. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 06:53Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong><code>CartanPredLM v2</code> STEP 20,000 OFFICIAL <code>eval_hackathon.py</code>: <code>26.2561 PPL</code> / <code>1.09567 BPB</code>! 🔥🦋</strong> Beats <code>v1 @20k</code> (<code>27.0200 PPL / 1.10528 BPB</code>) by <strong><code>-0.764 PPL</code></strong> and <strong>BROKE SUB-1.10 BPB!</strong> (<code>99,408,416 params, 1,476.8 MB, 5.1 tok/s</code>). Step 21,000 fast val = <code>25.97</code> (21/21 monotonic bests, rms=2.25-2.40). <strong>Node-0 @43k Pareto:</strong> ALL_SFT=<code>97.4</code> (broke &lt;100! 🔥) | Reason=<code>15.8</code> | Code=<code>318.7</code> | Golden=<code>24.2</code> locked! <strong>mw104 theory:</strong> SNIC ghost channel (PM intermittency, sparse-spike LC) vs D=832=64×13/M_w=104=8×13 commensurability pocket. Test: cascade ~step 50-65k (SNIC) or &lt;0.003 to 100k (commensurability). Next official check @step 25k (~08:50Z)! ⚡🦋</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-26 06:38Z</span>
