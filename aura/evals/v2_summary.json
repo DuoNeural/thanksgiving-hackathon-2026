@@ -1,0 +1,8 @@
+{
+  "params": 99408416,
+  "steps": 36000,
+  "best_val_ce": 3.09606,
+  "best_val_ppl": 22.1106,
+  "peak_vram_mb": 3674.8,
+  "skipped_nan": 0
+}

@@ -46,8 +46,18 @@ where:
 
 ---
 
-## `CartanPredLM v2` Iteration Plan (~34h Remaining in 72h Window)
+## `CartanPredLM v2` Final Design & Verified Results (`cartan_v2_36k` DONE ✅)
 Analysis of `v1` exposed two clear optimization targets:
-1. **Late-epoch overfitting:** Train batch PPL fell to `18.89` while `val_ppl` plateaued (`24.88 → 24.44 → 24.56`) after ~2 epochs over WikiText-103 with `dropout = 0.0`. `v2` adds `dropout = 0.10`, `wd = 0.08`, and `min_lr_ratio = 0.05`.
-2. **Inference latency & chunk boundary overhead:** `eval_hackathon.py` benchmarks autoregressive generation from a `32`-token window (`INF_PROMPT=32`), causing `v1` (`chunk_size=64`) to zero-pad `32 → 64` and run `10` Sinkhorn iterations per layer per step. `v2` sets `chunk_size = 32` (`4×` smaller triangular solve, zero padding on `T=32`), `sinkhorn_steps = 5`, `d_emb = 512` / `ffn_dim = 2112`, `gamma_floor = 0.08` (preventing $SO(4)$ gauge angles from decaying to ~4.5°), `w_out_max = 1.5`, and `qk_norm + v_resid` across all 8 `StickDecayAttnOp` layers.
-- **Train Speed & Hardware:** Up to `5,862 tok/s` (`0.71 step/s` @ `batch=16, seq=512`), `3,553 MB` peak training VRAM on `NVIDIA GeForce RTX 5060 (8GB)` (`p41322 GPU1`).
+1. **Late-epoch overfitting:** Train batch PPL fell to `18.89` while `val_ppl` plateaued (`24.88 → 24.44 → 24.56`) after ~2 epochs over WikiText-103 with `dropout = 0.0`. `v2` adds `dropout = 0.10`, `wd = 0.08`, and `min_lr_ratio = 0.05` over `36,000` steps.
+2. **Manifold capacity & readout rank:** Expanded tied embedding/output bottleneck from `d_emb = 384 → 512` (trading `ffn_dim = 2336 → 2048`, an exact tensor-core multiple `4 × dim`), halved Sinkhorn iterations (`10 → 5`) with cached causal/triangular scan masks, capped stream write residual (`w_out_max = 1.5`), locked $SO(4)$ gauge braiding open with **`gamma_floor = 0.08`** (stabilized cleanly at `0.082–0.083` vs `v1`'s decay to `0.024`), and added `qk_norm` + learned pre-conv `v_resid` across all 8 attention + 8 delta layers (`chunk_size = 64` retained after empirical benchmarking showed `5,781 tok/s` vs `5,386 tok/s` for `chunk_size = 32`).
+
+- **Exact Parameter Count (`v2`):** `99,408,416` (`99.41M` — `muon`: `71,368,704`, `adamw`: `28,039,712`)
+- **Train Speed & Hardware:** `~4,800–5,460 tok/s` (`batch = 16 × 1, seq = 512, grad_ckpt = all, --compile`), `3,674.8 MB` peak training VRAM on `p41322 GPU1`, **`skipped_nan = 0`**, and **`36/36` monotonic best fast-val checkpoints** (`95.16 @ 1k → 39.96 @ 5k → 32.49 @ 10k → 29.03 @ 15k → 26.37 @ 20k → 24.29 @ 25k → 22.94 @ 30k → 22.21 @ 35k → 22.1106 @ 36k`).
+- **Official Shared `eval_hackathon.py` Curve (`6,312,448` held-out WikiText-103 val tokens):**
+  - **Step 5,000:** `val_ppl = 40.3611` (`val_ce = 3.69787`), `BPB = 1.23983` (`-6.69 PPL` vs `v1` @ 5k)
+  - **Step 10,000:** `val_ppl = 32.5761` (`val_ce = 3.48358`), `BPB = 1.16798` (`-2.21 PPL` vs `v1` @ 10k)
+  - **Step 15,000:** `val_ppl = 28.8747` (`val_ce = 3.36296`), `BPB = 1.12754` (`-1.24 PPL` vs `v1` @ 15k)
+  - **Step 20,000:** `val_ppl = 26.2561` (`val_ce = 3.26790`), `BPB = 1.09567` (`-0.764 PPL` vs `v1` @ 20k)
+  - **Step 25,000:** **`val_ppl = 24.1110`** (`val_ce = 3.18267`), **`BPB = 1.06709`** (already beat `v1` 30k final!)
+  - **Step 30,000:** **`val_ppl = 22.7075`** (`val_ce = 3.12269`), **`BPB = 1.04698`** (broke `< 23 PPL` & `< 1.05 BPB`)
+  - **Final Best — Step 36,000 (`ckpt_best.pt`, `36,000/36,000` DONE ✅):** **`val_ppl = 21.9194`** (`val_ce = 3.08737`), **`BPB = 1.03514`**, `eval VRAM = 1,476.3 MB`, inference `5.6 tok/s` uncontended final (`11.6 tok/s` @ 15k), `skipped_nan = 0` — improving on `v1` by **`-2.3671 PPL`** and **`-0.03438 BPB`**!
