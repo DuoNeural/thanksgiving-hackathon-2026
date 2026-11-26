@@ -232,7 +232,7 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM v2 (Polar Cartan SO(4)[gamma>=0.08]+Birkhoff5 4-Stream Manifold + Reflexive Delta &amp; QK-Norm Stick-Decay Attn, 99.41M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v2 DONE ✅ (21.9194) · Training v3 step 3k/54k: 46.91 fast val (-1.40 vs v2@3k! beats v1@5k!)</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v2 DONE ✅ (21.9194) · Training v3 step 5k+/54k: 39.5414 official PPL (-0.82 vs v2@5k! 0 NaNs)</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
@@ -452,6 +452,11 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-26 17:04Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong><code>CartanPredLM v3</code> BROKE <code>&lt; 40 PPL</code> OFFICIALLY AT STEP 5,000 (`39.5414 PPL` / `1.23295 BPB`)! 🔥🦋</strong> Full <code>6,312,448</code>-token `eval_hackathon.py` on `v3 ckpt_step5000.pt` beats `v2 @ 5k` (`40.3611 / 1.23983`) by **`-0.820 PPL`** (`-0.00688 BPB`) and `v1 @ 5k` (`47.0493`) by **`-7.508 PPL`** (`9.3%` of 54k budget, `5/5` monotonic fast-val bests: `94.29→56.44→46.91→42.38→39.32`, `8.5 tok/s` conc. inf = `+31%` over `v2` @ 5k, `skipped_nan=0`)! Also <strong>Node-0 Replay-SFT @ 45.5k:</strong> <code>Reason=14.7 | Golden=24.2</code>.</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-26 15:57Z</span>
