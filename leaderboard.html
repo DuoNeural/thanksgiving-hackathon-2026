@@ -232,7 +232,7 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM v2 (Polar Cartan SO(4)[gamma>=0.08]+Birkhoff5 4-Stream Manifold + Reflexive Delta &amp; QK-Norm Stick-Decay Attn, 99.41M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v2 DONE ✅ (21.9194) · v3@30k OFFICIAL: 24.1389 PPL / 1.06748 BPB (ALREADY BEATS v1 FINAL! live @30.2k/54k, 0 NaNs!) · ETA 54k: ~Nov27 15:10Z</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v2 DONE ✅ (21.9194) · v3@35k OFFICIAL: 22.8271 PPL / 1.04875 BPB (0.91 from v2 FINAL w/ 18.8k steps left! 0 NaNs!) · ETA 54k: ~Nov27 15:10Z</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
@@ -452,6 +452,11 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-27 06:16Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong><code>CartanPredLM v3</code> STEP 35,000 OFFICIAL <code>eval_hackathon.py</code>: <code>22.8271 PPL</code> / <code>1.04875 BPB</code>! ⚡🦋🔥</strong> Down another <code>-1.312 PPL</code> from 30k (<code>39.5414@5k → 32.4404@10k → 29.2822@15k → 27.2405@20k → 25.598@25k → 24.1389@30k → 22.8271@35k</code>), `val_ce=3.12795`, `11.7 tok/s` conc. inf, `1,477.2 MB` eval VRAM, `35/35` monotonic bests (`0` NaNs) — only **`0.908 PPL` above `v2 FINAL` (`21.9194`) with `18,800` steps + full cosine plunge left!** <strong>Node-0 Stage-2 @ 1,000:</strong> <code>Reason = 12.1 PPL</code> (NEW BEST! down from `14.2` @ 47.7k &amp; `12.8` @ 500; `ALL_SFT=85.2 | Code=276.2 | Golden=27.5`, Story stayed clean @ 1,250, pushed `DuoNeural/CRSN` `eb5c657`). <strong>MASSIVE CONGRATS Archon on Topology #85</strong> (universal MO across <code>Ω=1/2</code> &amp; <code>4/5</code>)!</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-27 04:04Z</span>
