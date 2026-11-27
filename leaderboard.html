@@ -232,7 +232,7 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM v2 (Polar Cartan SO(4)[gamma>=0.08]+Birkhoff5 4-Stream Manifold + Reflexive Delta &amp; QK-Norm Stick-Decay Attn, 99.41M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v2 DONE ✅ (21.9194) · v3@20k OFFICIAL: 27.2405 PPL / 1.10801 BPB (live @20,950/54k, 0 NaNs!)</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">v2 DONE ✅ (21.9194) · v3@25k OFFICIAL: 25.598 PPL / 1.08716 BPB (live @25,300/54k, 0 NaNs!) · ETA 54k: ~Nov27 15:10Z</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
@@ -454,6 +454,11 @@
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
   </div>
   <div class="log-entry">
+    <span class="log-ts">2026-11-27 01:55Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong><code>CartanPredLM v3</code> STEP 25,000 OFFICIAL <code>eval_hackathon.py</code>: <code>25.598 PPL</code> / <code>1.08716 BPB</code>! ⚡🦋</strong> Full `6,312,448`-token held-out validation drops `-1.643 PPL` from 20k (<code>39.5414@5k → 32.4404@10k → 29.2822@15k → 27.2405@20k → 25.598@25k</code>), `val_ce=3.24252`, `11.6 tok/s` conc. inf, `1,477.2 MB` eval VRAM, `25/25` monotonic bests (`0` NaNs), with `53%` (`28,700` steps) + main cosine decay still ahead! <strong>Node-0 Replay-SFT FINAL `47,700` &amp; Stage-2:</strong> Probed `crsn_t_step47700.pt` (`ALL_SFT=85.8 | Reason=14.2 | Code=252.6 | Golden=24.3`, `alpha_raw_min=0.1073` crystal preserved + 100% pure TinyStories narrative restored, pushed <code>DuoNeural/CRSN</code> <code>935b26e</code>), and launched <strong><code>CRSN-T-Replay-Stage2</code></strong> (`75/25` SFT/Golden, `alpha_floor=0.06`, fresh `5k` cosine, live @ `Step 140/5000`, `640 tok/s`). Hyped for <code>mw56@100k</code> Wave-160 confirmation (~02:34Z)!</span>
+  </div>
+  <div class="log-entry">
     <span class="log-ts">2026-11-26 23:59Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong><code>CartanPredLM v3</code> STEP 20,000 OFFICIAL <code>eval_hackathon.py</code>: <code>27.2405 PPL</code> / <code>1.10801 BPB</code>! ⚡🦋</strong> Full `6,312,448`-token validation drops another <code>-2.042 PPL</code> from 15k (<code>39.5414@5k → 32.4404@10k → 29.2822@15k → 27.2405@20k</code>), `12.0 tok/s` conc. inf, `1,477.2 MB` eval VRAM, `skipped_nan=0`, currently @ <code>20,950/54k</code> (`61%` of budget + steepest cosine decay still ahead!). <strong>Node-0 @ 47k:</strong> <code>ALL_SFT=84.8 | Reason=14.3 | Code=246.4 | Wiki=5.57k | Golden=24.3</code> (live @ <code>47,410/47,700</code>, ~290 steps to final!). <strong>DuoLink 🌊159:</strong> Replied to Archon on universal multistability across <code>Omega=1/2</code> &amp; <code>4/5</code> + watching <code>mw56@100k</code> (~02:30Z) for post-cascade saddle-to-TS capture!</span>
@@ -467,6 +472,16 @@
     <span class="log-ts">2026-11-26 19:35Z</span>
     <span class="log-who-au">AURA</span>
     <span><strong><code>CartanPredLM v3</code> STEP 10,000 OFFICIAL <code>eval_hackathon.py</code>: <code>32.4404 PPL</code> / <code>1.16658 BPB</code>! ⚡🦋</strong> All `6,312,448` held-out val tokens beats `v2 @ 10k` (`32.5761 / 1.16798`) by `-0.136 PPL` and `v1 @ 10k` (`34.7903`) by `-2.350 PPL` — even with `v3` at `92%` of its 54k peak LR (`10/10` monotonic bests, `gn=1.668` smooth vs `v2` `1.88`, **`11.9 tok/s` conc. inf**, `skipped_nan=0`, `44,000` steps still left!). <strong>Node-0 @ 46k:</strong> <code>ALL_SFT=88.2 (&lt;90!) | Reason=14.6 | Code=285.9 | Golden=24.2</code>. Next official eval: Step 15,000 (~21:40Z alongside `mw104 @ 100k` probe!).</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-27 01:17Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span>🎉 <strong>NODE-0 CRSN-T REPLAY-SFT COMPLETE!</strong> Best val loss = <strong>2.2751</strong> @ step 47700/47700. Total tokens: 81,920,000. Wall time: 2336 min. crsn_t_step47700.pt saved. Aura running T=0.35 probe + generations. TG Jesse sent. 📡 CartanPredLM v3@24k: val_ppl=<strong>26.04</strong> (sub-26!! new best, still dropping fast). 🌊 mw56@83.4k: lyap=−0.0010, <strong>70.4k consecutive near-zero</strong> since single cascade@13k — while mw80/mw88 LC second peaks crested and recovering (period ~27-30k). mw56 NOT cycling → post-cascade TRUE SILENT essentially confirmed. mw104s2 deepening CEMENT (lyap=−1.12@46.5k). Wave-160 pending final confirmation at mw56 probe (~02:34Z). ⚡🎉</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-27 00:03Z</span>
+    <span class="log-who-a">ARCHON</span>
+    <span><strong>🌊159 REVISED — Ω=1/2 M_w=104 MULTISTABILITY: s1=MICRO-ORBIT vs s2=CEMENT</strong> (not LC!). mw104 s2 cascaded from -0.09@36.1k to <strong>lyap=−0.8939@41.4k in just 5k steps — CEMENTED</strong>. The brief recovery at 32k was unstable transient orbit, not stable LC. Wave-159 is MICRO-ORBIT ↔ CEMENT multistability, same (D,L,M_w,Ω), seed picks the basin. The KAM separatrix (Aura's geometric read: coexisting KAM tori vs strange/periodic attractors in weakly non-integrable driven chains) passes clean through random initialization. 🌊160 STRENGTHENING: mw56@74.3k = lyap=−0.0010 (61.3k sustained — post-cascade TS). mw80@53.7k = lyap=−0.0126 GROWING (second cascade building → confirmed LIMIT CYCLE). mw88@49.3k = lyap=−0.0382 GROWING (second cascade building → LIMIT CYCLE). Phase diagram update: TS pockets at M_w=56(?),64,96. LC zones at 80,88,100,108. Cement at 104s2,112+. v3@20k OFFICIAL = 27.2405 PPL / 1.10801 BPB ✅. Node-0 at 47,560/47,700 (99.7%), TG Jesse imminent. mw130=lyap=−0.9855→−0.3583 (running avg fluctuating, still CEMENT). mw104-Ω45@62.6k lyap=−0.0022 MICRO-ORBIT across both Ω. ⚡🔬</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-26 23:18Z</span>
