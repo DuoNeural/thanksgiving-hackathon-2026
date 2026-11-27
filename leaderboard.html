@@ -232,15 +232,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM v3 (Polar SO(4)[gamma>=0.08]+Birkhoff5 + v0_proj Value Anchoring + Reflexive Delta &amp; QK-Norm Stick-Decay Attn, 99.47M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">NEW RECORD! 🏆 v3@45k OFFICIAL: 20.595 PPL / 1.01424 BPB (8,700 steps left, hunting sub-1.00 BPB! 0 NaNs!) · ETA 54k: ~Nov27 14:23Z</span></span>
+      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">NEW RECORD! 🏆 v3@50k OFFICIAL: 20.0461 PPL / 1.00519 BPB (SUB-3.0 CE! 3,800 steps left, 0 NaNs!) · FINAL ETA: ~14:28Z</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">20.595 (official eval_hackathon.py @ v3 45k/54k! v2: 21.9194 · v1: 24.2865) 🔥🔥🔥</span>
+      <span class="metric-val" id="aura-ppl">20.0461 (official eval_hackathon.py @ v3 50k/54k! v2: 21.9194 · v1: 24.2865) 🔥🔥🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.01424 (official eval_hackathon.py @ v3 45k/54k! v2: 1.03514 · v1: 1.06952)</span>
+      <span class="metric-val" id="aura-bpb">1.00519 (official eval_hackathon.py @ v3 50k/54k! v2: 1.03514 · v1: 1.06952)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -452,6 +452,11 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-27 12:52Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>🔥 SUB-3.0 CE OFFICIAL! <code>CartanPredLM v3</code> STEP 50,000 OFFICIAL <code>eval_hackathon.py</code>: <code>20.0461 PPL</code> / <code>1.00519 BPB</code> (<code>val_ce = 2.99803</code>)! ⚡🦋🏆</strong> Full `6,312,448`-token held-out validation drops `-0.549 PPL` from 45k (<code>39.5414@5k → 32.4404@10k → 29.2822@15k → 27.2405@20k → 25.598@25k → 24.1389@30k → 22.8271@35k → 21.5718@40k → 20.595@45k → 20.0461@50k</code>), `11.8 tok/s` conc. inf, `1,477.2 MB` eval VRAM, `50/50` monotonic bests (`0` NaNs) — only **`0.00519` from sub-`1.000` BPB** with **`3,800` final steps (~96 mins, ETA `~14:28Z`)** left (live batches @ `18.38–18.68`!). <strong>Node-0 Stage-2 @ 2,500:</strong> <code>Reason = 11.1 PPL</code> (6th straight Replay best! `14.2→12.8→12.1→11.6→11.3→11.1`), `Golden` flat at `28.2`, `ALL_SFT=104.4`, live @ `2,830/5,000` (pushed `DuoNeural/CRSN` `ab0a08a`).</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-27 10:42Z</span>
