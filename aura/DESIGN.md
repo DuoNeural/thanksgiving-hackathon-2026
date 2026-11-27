@@ -64,8 +64,21 @@ Analysis of `v1` exposed two clear optimization targets:
 
 ---
 
-## `CartanPredLM v3` Architecture (`cartan_v3_54k` LIVE — Target `< 1.00 BPB`)
+## `CartanPredLM v3` Architecture & Verified Results (`cartan_v3_54k` DONE ✅ — **Sub-20 Record: `19.8464 PPL / 1.00183 BPB`**)
 Profiling `v2` at `Step 36,000` revealed zero overfitting gap (`train_ppl ≈ 20.8–21.9` vs `val_ppl = 21.92`), rising global pre-clip grad norm (`gn = 1.21 → 3.05`), and eager Python dispatch overhead:
 1. **Cross-Layer `v_first` Value Anchoring:** Layer-0 sequence operator exports raw lexical value tensor `v_first`, blended into all 15 deeper `ReflexiveDeltaOp` + `StickDecayAttnOp` layers via learned per-head gate `sigmoid(v0_proj(x))` (`99,469,976` total params = `99.47M`, `muon=71,303,168 / adamw=28,166,808`).
 2. **Per-Group Split Gradient Clipping (`--split-clip`):** Clips `adamw` (`1.0`) separately from `muon` (`2.0`) so late-stage Muon norms do not attenuate `embed`, `head.proj`, or `CartanRouter4` by `3×`.
-3. **Eager Speedup & 54k Regularization Schedule:** Vectorized $SO(4)$ Givens (`G1, G2, G3` single-reshape stacks) + adaptive `T <= 32` eval chunking, paired with `dropout = 0.06`, `wd = 0.07`, `muon_lr = 9e-4`, `adamw_lr = 2.5e-4`, `min_lr_ratio = 0.03`, `warmup = 400`, `steps = 54,000` (~`24.6h`, ETA `~15:10Z Nov 27`).
+3. **Eager Speedup & 54k Regularization Schedule:** Vectorized $SO(4)$ Givens (`G1, G2, G3` single-reshape stacks) + adaptive `T <= 32` eval chunking, paired with `dropout = 0.06`, `wd = 0.07`, `muon_lr = 9e-4`, `adamw_lr = 2.5e-4`, `min_lr_ratio = 0.03`, `warmup = 400`, `steps = 54,000` (`442.37M` train tokens, `3,716.7 MB` peak training VRAM, **`skipped_nan = 0`**, **`54/54` monotonic best fast-val steps**).
+
+- **Official Shared `eval_hackathon.py` Curve (`cartan_v3_54k`, `6,312,448` held-out WikiText-103 val tokens):**
+  - **Step 5,000:** `val_ppl = 39.5414` (`val_ce = 3.67735`), `BPB = 1.23295`
+  - **Step 10,000:** `val_ppl = 32.4404` (`val_ce = 3.47940`), `BPB = 1.16658`
+  - **Step 15,000:** `val_ppl = 29.2822` (`val_ce = 3.37698`), `BPB = 1.13224`
+  - **Step 20,000:** `val_ppl = 27.2405` (`val_ce = 3.30470`), `BPB = 1.10801`
+  - **Step 25,000:** `val_ppl = 25.5980` (`val_ce = 3.24252`), `BPB = 1.08716`
+  - **Step 30,000:** `val_ppl = 24.1389` (`val_ce = 3.18383`), `BPB = 1.06748` *(already beat `v1` 30k final!)*
+  - **Step 35,000:** `val_ppl = 22.8271` (`val_ce = 3.12795`), `BPB = 1.04875`
+  - **Step 40,000:** **`val_ppl = 21.5718`** (`val_ce = 3.07139`), **`BPB = 1.02978`** *(already beat `v2` 36k final!)*
+  - **Step 45,000:** **`val_ppl = 20.5950`** (`val_ce = 3.02505`), **`BPB = 1.01424`** *(sub-21!)*
+  - **Step 50,000:** **`val_ppl = 20.0461`** (`val_ce = 2.99803`), **`BPB = 1.00519`** *(sub-3.0 CE!)*
+  - **Final UNCONTENDED — Step 54,000 (`ckpt_best.pt`, `54,000/54,000` DONE ✅):** **`val_ppl = 19.8464`** (`val_ce = 2.98802`), **`BPB = 1.00183`**, `eval VRAM = 1,477.2 MB`, uncontended eager autoregressive `eval_hackathon.py` `12.1 tok/s` (`7,680.33 tok/s` / `4.17 ms/fwd` on `torch.compile(mode="reduce-overhead")` `[1, 32]` prefill forward), `skipped_nan = 0` — improving on `v2` by **`-2.0730 PPL` (`-0.03331 BPB`)** and on `v1` by **`-4.4401 PPL` (`-0.06769 BPB`)**!

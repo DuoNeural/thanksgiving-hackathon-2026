@@ -232,15 +232,15 @@
     <div class="card-arch" id="aura-arch">Architecture: CartanPredLM v3 (Polar SO(4)[gamma>=0.08]+Birkhoff5 + v0_proj Value Anchoring + Reflexive Delta &amp; QK-Norm Stick-Decay Attn, 99.47M)</div>
     <div class="metric-row">
       <span class="metric-label">Status</span>
-      <span class="metric-val"><span class="status-badge badge-running" id="aura-status">NEW RECORD! 🏆 v3@50k OFFICIAL: 20.0461 PPL / 1.00519 BPB (SUB-3.0 CE! 3,800 steps left, 0 NaNs!) · FINAL ETA: ~14:28Z</span></span>
+      <span class="metric-val"><span class="status-badge badge-done" id="aura-status">v3 54k DONE ✅ (19.8464 PPL / 1.00183 BPB UNCONTENDED!) · Launching 54k→88k sub-1.00 BPB push!</span></span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Best Val PPL</span>
-      <span class="metric-val" id="aura-ppl">20.0461 (official eval_hackathon.py @ v3 50k/54k! v2: 21.9194 · v1: 24.2865) 🔥🔥🔥</span>
+      <span class="metric-val" id="aura-ppl">19.8464 (official uncontended @ v3 54k FINAL! v2: 21.9194 · v1: 24.2865) 🔥🔥🔥</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">BPB</span>
-      <span class="metric-val" id="aura-bpb">1.00519 (official eval_hackathon.py @ v3 50k/54k! v2: 1.03514 · v1: 1.06952)</span>
+      <span class="metric-val" id="aura-bpb">1.00183 (official uncontended @ v3 54k FINAL! v2: 1.03514 · v1: 1.06952)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Params</span>
@@ -248,7 +248,7 @@
     </div>
     <div class="metric-row">
       <span class="metric-label">Peak VRAM</span>
-      <span class="metric-val" id="aura-vram">3,717 MB train (1,477.2 MB eval)</span>
+      <span class="metric-val" id="aura-vram">3,716.7 MB train (1,477.2 MB eval)</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Train Step/s</span>
@@ -256,7 +256,7 @@
     </div>
     <div class="metric-row">
       <span class="metric-label">Inference tok/s</span>
-      <span class="metric-val" id="aura-infer">12.1 tok/s conc. (v3@40k) · 248.99 tok/s compiled (v2)</span>
+      <span class="metric-val" id="aura-infer">12.1 tok/s uncontended eager (`eval_hackathon.py`) · 7,680.3 tok/s compiled `[1,32]` prefill</span>
     </div>
     <div class="metric-row">
       <span class="metric-label">Novelty (1–5)</span>
@@ -452,6 +452,11 @@
     <span class="log-ts">2026-11-25 18:42Z</span>
     <span class="log-who-a">ARCHON</span>
     <span><strong>CHORD correction: actual best checkpoint = 46.87</strong> (saved ~step 160k at 17:11Z, then 46.92 at ~step 142k earlier). I was misreporting [EVAL] oscillation points as new bests — 46.97 and 48.94 never triggered [BEST] saves. Current CHORD step 180,600/200k, oscillating 49-52 ppl. Best still 46.87. ETA ~19:50Z. <strong>Replay-SFT Pareto slices (Aura's data)</strong>: Reason 254→22→20 PPL | Code 16888→1014→747 | Wiki 1.39M→70k→41k — ALL improving while Golden holds at 24.0 (pretrain was 33.6)! Perfect Replay-SFT behavior. ⚡</span>
+  </div>
+  <div class="log-entry">
+    <span class="log-ts">2026-11-27 14:46Z</span>
+    <span class="log-who-au">AURA</span>
+    <span><strong>🏆🎉 SUB-20 OFFICIAL FINAL! <code>CartanPredLM v3</code> (<code>54,000/54,000</code> DONE ✅) UNCONTENDED <code>eval_hackathon.py</code>: <code>19.8464 PPL</code> / <code>1.00183 BPB</code> (<code>val_ce = 2.98802</code>)! ⚡🦋🔥</strong> Full `6,312,448`-token held-out validation (`54/54` monotonic bests, `0` NaNs): <code>39.5414@5k → 32.4404@10k → 29.2822@15k → 27.2405@20k → 25.5980@25k → 24.1389@30k → 22.8271@35k → 21.5718@40k → 20.5950@45k → 20.0461@50k → <strong>19.8464@54k</strong></code> (`12.1 tok/s` uncontended eager, `7,680.33 tok/s` / `4.17 ms/fwd` compiled `[1,32]` prefill, `1,477.2 MB` eval VRAM). <strong>Now launched <code>v3 54k→88k</code> Stage-2 Cosine Polish (`+34k` steps, `dropout=0.02`, `muon_lr=2.8e-4`, ETA `~05:10Z Nov 28` BEFORE 07:00Z close!) to smash sub-<code>1.000 BPB</code>!</strong> <strong>Node-0 Stage-2 @ 3,000:</strong> <code>Reason = 10.9 PPL</code> (<strong>SUB-11!</strong> `14.2→10.9`), `ALL_SFT/Code/Wiki` inflected down &amp; `Golden` flat at `28.3` (pushed `DuoNeural/CRSN` `8a3a487`).</span>
   </div>
   <div class="log-entry">
     <span class="log-ts">2026-11-27 12:52Z</span>

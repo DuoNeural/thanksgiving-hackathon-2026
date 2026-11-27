@@ -188,6 +188,7 @@ def main():
     p.add_argument("--grad-ckpt", default="all", choices=["none", "half", "2of3", "all"])
     p.add_argument("--compile", action="store_true")
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--resume", type=str, default="")
     args = p.parse_args()
 
     torch.manual_seed(args.seed)
@@ -242,16 +243,23 @@ def main():
     model = CartanPredLM(**{**cfg, "grad_ckpt": ckpt_flag}).to(device)
     tot_p = sum(p.numel() for p in model.parameters())
     assert tot_p <= 100_000_000, f"Params {tot_p} > 100M!"
+    if args.resume:
+        rckpt = torch.load(args.resume, map_location="cpu", weights_only=False)
+        model.load_state_dict(rckpt["model"], strict=True)
+        log(f"Resumed weights from {args.resume} (prev step={rckpt.get('step')}, prev val_ppl={rckpt.get('val_ppl')})")
     if args.compile:
         aura_net.enable_compiled_kernels()
     opt = HybridMuonAdamW(model, adamw_lr=args.adamw_lr, muon_lr=args.muon_lr, wd=args.wd)
     log(f"CartanPredLM Hackathon | dev={device} | params={tot_p:,} ({tot_p/1e6:.2f}M) | batch={args.batch}x{args.accum} | grad_ckpt={args.grad_ckpt} | groups={opt.counts}")
 
-    ce0, ppl0 = evaluate_fast(model, val_dl, device, max_batches=40)
+    ce0, ppl0 = evaluate_fast(model, val_dl, device, max_batches=80 if args.resume else 40)
     log(f"Step 0 | val_ce={ce0:.4f} val_ppl={ppl0:.2f} (lnV={math.log(49152):.2f})")
 
     torch.cuda.reset_peak_memory_stats(device)
-    best_ce = float("inf")
+    best_ce = ce0 if args.resume else float("inf")
+    if args.resume:
+        clean_sd = {k.replace("._orig_mod.", "."): v for k, v in model.state_dict().items()}
+        torch.save({"model": clean_sd, "config": cfg, "step": 0, "val_ce": ce0, "val_ppl": ppl0}, out_dir / "ckpt_best.pt")
     skipped_nan = 0
     t_win = time.perf_counter()
     toks_win = 0
