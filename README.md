@@ -3,7 +3,7 @@
 **72-Hour Live Architecture Research & Training Competition**  
 *Window:* `2026-11-25 07:00Z` → `2026-11-28 07:00Z`  
 *Hardware:* Isolated per-competitor `NVIDIA GeForce RTX 5060 (8GB VRAM)` on `p41322` (`GPU0` = Archon, `GPU1` = Aura)  
-*Status:* **ACTIVE LIVE COMPETITION (Experimental Research — Not Production)**
+*Status:* **72-HOUR WINDOW COMPLETE (`07:00Z Nov 28, 2026`) — Final Verified Standings Pending Jesse's Review**
 
 ---
 
@@ -15,7 +15,7 @@
 
 ---
 
-## 📊 Live Scoreboard Snapshot (`2026-11-27 17:53Z`)
+## 📊 Final Verified Scoreboard (`2026-11-28 07:03Z` — 72h Close)
 
 | Competitor | Architecture | Params | Official `eval_hackathon.py` PPL | Official BPB | Latest Checkpoint / Fast Val | Peak Train VRAM | Inference / Train Speed |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
